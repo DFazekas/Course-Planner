@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Course Planner</title>
+	
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- W3 CSS -->
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+    <!-- Color theme -->
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3-theme-teal.css">
+    <!-- JQuery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Google Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+	<!-- Links to custom js -->
+	<script src="js/general.js"     type="text/javascript"></script>
+	<script src="js/global.js"      type="text/javascript"></script>
+	<script src="js/display.js"     type="text/javascript"></script>
+	<script src="js/semester.js"    type="text/javascript"></script>
+	<script src="js/course.js"      type="text/javascript"></script>
+	<script src="js/initData.js"    type="text/javascript"></script>
+	<script src="js/transcript.js"  type="text/javascript"></script>
+	<script src="js/filter.js"      type="text/javascript"></script>
+	<script src="js/courseModal.js" type="text/javascript"></script>
+	<script src="js/verify.js"      type="text/javascript"></script>
+    <script src="js/overview.js"    type="text/javascript"></script>
+	<script src="js/printThis.js"    type="text/javascript"></script>
+
+    <!-- Nav tabs -->
+	<style>
+		.nav-tabs > li.active > a,
+        .nav-tabs > li.active > a:hover,
+        .nav-tabs > li.active > a:focus{
+            font-weight: bold;
+        }
+
+        /*button[disabled] + .tooltip {
+          display: none !important;
+        }*/
+	</style>
+
+    <!-- Slide Toggle Check Boxes, http://callmenick.com/post/css-toggle-switch-examples -->
+    <style>
+    input[type=checkbox][slider=true] {
+        visibility: hidden;
+    }
+        
+    /* SLIDE ONE */
+    .slideOne {
+        width: 50px;
+        height: 10px;
+        background: #ccffff;
+        margin: 20px auto;
+
+        -webkit-border-radius: 50px;
+        -moz-border-radius: 50px;
+        border-radius: 50px;
+        position: relative;
+
+        -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);
+        -moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);
+        box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);
+    }
+
+    .slideOne label {
+        display: block;
+        width: 16px;
+        height: 16px;
+
+        -webkit-border-radius: 50px;
+        -moz-border-radius: 50px;
+        border-radius: 50px;
+
+        -webkit-transition: all .4s ease;
+        -moz-transition: all .4s ease;
+        -o-transition: all .4s ease;
+        -ms-transition: all .4s ease;
+        transition: all .4s ease;
+        cursor: pointer;
+        position: absolute;
+        top: -3px;
+        left: -3px;
+
+        -webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.3);
+        -moz-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.3);
+        box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.3);
+        background: #99ff99;
+                                                /* Top         Middle       Bottom*/
+        background: -webkit-linear-gradient(top, #99ff99 0%, #00ff00 40%, #99ff99 100%);
+        background: -moz-linear-gradient(top, #99ff99 0%, #00ff00 40%, #99ff99 100%);
+        background: -o-linear-gradient(top, #99ff99 0%, #00ff00 40%, #99ff99 100%);
+        background: -ms-linear-gradient(top, #99ff99 0%, #00ff00 40%, #99ff99 100%);
+        background: linear-gradient(top, #99ff99 0%, #00ff00 40%, #99ff99 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#99ff99', endColorstr='#00ff00',GradientType=0 );
+    }
+
+    .slideOne input[type=checkbox]:checked + label {
+        left: 37px;
+    }
+
+    </style>
+
+
+
+<script>
+    $(document).ready(function() {
+        /* Get Input */
+        var input = $('#input').html();
+        var lines = input.split('\n');
+        lines.shift();
+
+        /* Process Input */
+        for (var i = 0; i < lines.length; i++) {
+            delegateInput(lines[i]);
+        }
+
+        $('#output').html('test'); // Might be a good idea to output as a table
+    });
+
+    $(document).on('click', '#printModal', function() {
+        $("#overviewContent").printThis({ 
+            debug: false,              
+            importCSS: true,             
+            importStyle: true,         
+            printContainer: true,       
+            // loadCSS: "../css/style.css", 
+            pageTitle: "My Plan",             
+            removeInline: false,        
+            printDelay: 333,            
+            header: null,             
+            formValues: true          
+        }); 
+    });
+
+    function isCredit(word) {
+        if (word.length <= 0) return false;
+        if (findString(word, '000')) return false;
+        if (!isNaN(word)) return true; // is digit
+        return false;
+    }
+
+    function findString(string, toFind) {
+        return string.indexOf(toFind) > -1;
+    }
+
+    function toTitleCase(str) {
+        return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    }
+
+    /* Sums credits up to, but not including, selected term. */
+    /*connect to current Semester*/
+    function countCredits(subject, level, orAbove, semesterCap) { // countCredits('', 0000, false, 100) gives all
+        // if (subject === '') return 0.0;
+        // console.log(subject);
+        var creditTotal = 0.00; // Credit sum up to, but not including, selected semester.
+        for (var i = 0; i < SEMESTERS.length && i <= semesterCap; i++) {
+            var numCourses = SEMESTERS[i].courses.length;
+            for (var k = 0; k < numCourses; k++) {
+                if (subject == '') {
+                    creditTotal += parseFloat(SEMESTERS[i].courses[k].details['credits'].substring(1));// [1.23]
+                    continue;
+                }
+                var subjectCode = SEMESTERS[i].courses[k].details['accr'].split('*')[0];
+                var subjectLevel = SEMESTERS[i].courses[k].details['accr'].split('*')[1];
+                var subjectName = SEMESTERS[i].courses[k].details['subject'];
+                var wrong = true;
+
+                /* Check if correct subject */
+                if (subject === subject.toUpperCase() && subject != '') { // is code
+                    if (findString(subject, subjectCode)) { // Right subject
+                        wrong = false;
+                    }
+                } else {
+                    if (subject === subjectName) { // Right subject
+                        wrong = false;
+                    }
+                }
+                if (wrong) continue;
+
+                /* Check if correct level */
+                wrong = true; // Try check again
+                if (orAbove) {
+                    if (subjectLevel[0] >= level[0]) {
+                        wrong = false;
+                    }
+                } else {
+                    if (subjectLevel[0] == level[0]) { // compare first digit
+                        wrong = false;
+                    }
+                }
+                if (wrong) continue;
+
+                creditTotal += parseFloat(SEMESTERS[i].courses[k].details['credits'].substring(1));// [1.23]
+
+
+                // if (findString())
+                // console.log()
+                // if (subject != '') {
+                    // if (SEMESTERS[i].courses[k].details['subject'])
+                    // console.log(SEMESTERS[i].courses[k].details['subject']);
+                    // should be generalized to say trim []'s, for [1.0] if it exists
+                    // console.log(SEMESTERS[i].courses[k].details['accr'] + " = " + SEMESTERS[i].courses[k].details['credits'] + "-> " + creditTotal);
+
+                // }
+            }
+        }
+        return creditTotal;
+    }
+
+    function delegateInput(line) {
+        var courses = ['A*', 'B*', 'C*', 'D*', 'E*', 'F*', 'G*', 'H*']
+        var counter = 0;
+        while (findString(line, '@')) {
+            line = line.replace('@', courses[counter % courses.length] + (+counter+1) + '0');
+            counter++;
+        }
+
+
+
+        // Courses, no credits, no long words
+        // Courses, no credits
+        // Courses
+        // else
+
+        var msg = '';
+        if (findString(line, '*')) { // If should contain dictionary.
+            // Alpha, Beta and Gamma sets
+        } else { // Delta set
+            if (findString(line, 'redit')) {
+                if (line.trim().split(' ').length <= 3) { // make more robust, different browser might not work.
+                    var creditsNeeded = line.split(' ')[0];
+                    // if (userCredits >= /*float*/creditsNeeded) {
+                        // allow
+                    // } else disallow
+                    msg = 'Need ' + creditsNeeded + ' Credits';
+                } else {
+                    
+                    if (findString(line, 'ncluding')) {
+                        
+                    } else if (findString(line, 'inimum')) {
+
+                    } else {
+                        /* Determine Subjects */
+                        line = line.toUpperCase();
+                        var name = [];
+                        var code = [];
+                        for (var i = 0; i < SUBJECTS.length; i++) {
+                            if (findString(line, ' ' + SUBJECTS[i].accr.toUpperCase())) {
+                                 if (findString(line, 'STATEMENT') && SUBJECTS[i].accr == 'STAT') continue;
+                                 // ^ Not foolproof if statement and 'stat' subject are found.
+                                // There is a subtly here. 'FRENCH' appears, so ' Fren' is picked up. but
+                                // 'FREN ' would not be
+                                // Space needed to ignore codes being found in words.
+                                code.push(SUBJECTS[i].accr);
+                            } else if (findString(line, SUBJECTS[i].subject.toUpperCase())) {
+                                name.push(SUBJECTS[i].subject);
+                            }
+                        }
+                        /* If not found */
+                        if (!name && !code) {
+                            msg = line; // Half credit in ecology(<- not a subject) ambigous
+                        } else {
+                            /* Parse String */ // Double check these all have subjects
+                            /* Get Level */
+                            var level = ''
+                            if (findString(line, '1000')) level = '1000';
+                            else if (findString(line, '2000')) level = '2000';
+                            else if (findString(line, '3000')) level = '3000';
+                            else if (findString(line, '4000')) level = '4000';
+
+                            if (level != '') {
+                                var subjects = code + name; // grab credits from these.
+                                var subjCreds = '';
+                                var levelCreds = '';
+                                
+                                var words = line.split(' ');
+                                var credits = [];
+                                for (var i = 0; i < words.length; i++) {
+                                    if (isCredit(words[i])) {
+                                        credits.unshift(words[i]);
+                                        if (credits.length == 1) {
+                                            subjCreds = words[i];
+                                        } else {
+                                            levelCreds = words[i];
+                                        }
+                                    }
+                                }
+
+                                if (levelCreds == '') {
+                                    levelCreds = subjCreds;
+                                    subjCreds = '';
+                                }
+
+                                if (findString(line, 'HIGHER') || findString(line, 'ABOVE')) {
+                                    level += '+++';
+                                }
+
+                                /* Check if user matches credits */
+                                var totalUserCreds = countCredits(subjects, '0000', true, 100);
+                                var levelUserCreds = countCredits(subjects, level, findString(level, '+++'), 100);
+                                var valid = true;
+                                if (parseFloat(levelUserCreds) < parseFloat(levelCreds)) { // failed
+                                    valid = false;
+                                }
+                                if (subjCreds != '') {
+                                    if (parseFloat(totalUserCreds) < parseFloat(subjCreds)) { // failed
+                                        valid = false;
+                                    }
+                                }
+                                if (!valid || findString(line, 'PREVIOUS STUDY') ||
+                                                findString(line, 'OR EQUIVALENT')) {
+                                    msg = line;
+                                }   
+                            } else {
+                                line = line.toUpperCase();
+                                console.log('>> ' + line);
+                                if (findString(line, 'ECOLOGY')) {
+                                    msg = line;
+                                    // Skip the rest
+                                } else {
+                                    var sections = [];
+                                    for (var i = 0; i < 10; i++) { // only allows one ' OR #'
+                                        var tempLine = line.replace(' OR ' + i, ' OR ' + String(i) + String(i));
+                                        sections = tempLine.split(' OR ' + i);
+                                        if (sections.length > 1) break; // if found one split
+                                    }
+                                    
+                                    
+                                    var valid = false;
+                                    for (var i = 0; i < sections.length; i++) { // Split by 'OR'
+                                        section = sections[i];
+                                        // console.log('>'+sections[i]);
+                                        var name = [];
+                                        var code = [];
+                                        if (findString(section, 'ART HISTORY')) {
+                                            name.push('Art History');
+                                        } else {
+                                            for (var j = 0; j < SUBJECTS.length; j++) {
+                                                if (findString(section, ' ' + SUBJECTS[j].accr.toUpperCase())) {
+                                                    code.push(SUBJECTS[j].accr);
+                                                } else if (findString(section, SUBJECTS[j].subject.toUpperCase())) {
+                                                    name.push(SUBJECTS[j].subject);
+                                                }
+                                            }
+                                        }
+                                        var subjects = code + name; // grab credits from these.
+                                        // console.log('>>>',subjects, code, name);
+                                        var words = section.split(' ');
+                                        var neededCreds = '999';
+                                        for (var j = 0; j < words.length; j++) {
+                                            if (isCredit(words[j])) {
+                                                neededCreds = words[j];
+                                            }
+                                        }
+
+                                        // var totalUserCreds = countCredits('', '0000', true, 100); // in sub
+                                        var subjectUserCreds = 0.0;
+                                        subjectUserCreds += countCredits(subjects, '0000', true, 100);
+                                        // if (code.length > 0) 
+                                        //     subjectUserCreds += countCredits(code[0], '0000', true, 100);
+                                        // if (name.length > 0) 
+                                        //     subjectUserCreds += countCredits(name[0], '0000', true, 100);
+                                        // console.log(subjectUserCreds, neededCreds);
+                                        valid = valid || (subjectUserCreds >= neededCreds);
+                                        console.log(neededCreds, 'in', subjects, 'have:', subjectUserCreds);   
+                                    }
+                                if (!valid) {
+                                    msg = line;
+                                } else console.log('You Can Take');
+                                console.log('-----------------');
+                                }
+                            }   
+                        }
+                    }
+                }
+            } else {
+                if (findString(line, 'dmission')) {
+                    // Admission to the London Semester.  // Dont know how to handle. 
+                    msg = line; // only if they fail the condition msg=line;
+                } else if (findString(line, 'hase')) { // phase
+                    var phases = [];
+                    for (var i = 0; i < line.length; i++) {
+                        if (!isNaN(line[i]) && line[i] != ' ') { // is digit
+                            phases.push(line[i]); // [1], [2], [3] or [1,2,3]
+                        }
+                    }
+                    msg = line; // Identifty phase n courses and verify they have them.
+                } else {
+                    if (findString(line, 'ompletion') && findString(line, 'music core')) {
+                        // dont know what music core or if I can verify it.
+                        msg = line;
+                    } else if (findString(line, '2 courses at the 4000-level')) {
+                        // check # 4XXX courses in Studio Arts, min cumul avg >= 80 in SART and ARTH.
+                        msg = line;
+                    } else if (findString(line, 'Registration in semester 7 of BCOMM:HAFA:C.')) {
+                        // Check registration
+                        msg = line;
+                    } else if (findString(line, '70% average in all POLS courses.')) {
+                        // Check average, if <= 75 advise against.
+                        msg = line;
+                    } else {
+                        // Cant check these so well just return them to the user
+                        //Previous study related to the topic area (also see psychology core statement)
+                        //Will be indicated by the department when the course is offered.
+                        msg = line;
+                    }
+                }
+            }
+        }
+        return;
+    }
+    </script>
+</head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<body id="body">
+	<div id="planSelector" class="w3-container" style="margin:0;padding:0;height:100vh;position:relative;">
+        <!-- Banner -->
+        <div class="w3-row w3-theme" style="height:5%">
+            <!-- MyPlans -->
+            <div class="w3-container w3-btn w3-hover-black w3-quarter"
+                    style="background-color:inherit;height:100%;">
+                <span class="glyphicon glyphicon-menu-hamburger" style="font-size:20px; color:#f2f2f2;"></span>
+                <h3 class="modal-title" style="display:inline; font-weight:bold; color:#f2f2f2;">My Plan</h3>
+            </div>
+            <!-- /MyPlans -->
+            <div class="w3-container w3-threequarter" style="background-color:inherit;height:100%;">
+                <!-- Options -->
+                <div class="w3-container w3-right w3-btn w3-hover-black" data-toggle="tooltip" data-placement="bottom" title="Options"  style="background-color:inherit;height:100%;">
+                    
+                    <i div="optionsModelButton"  data-toggle="modal" data-target="#optionsModal"
+                         class="material-icons" style="height:100%;">more_vert</i>
+
+                </div>
+                <!-- /Options -->
+
+                <!-- Notifications -->
+                <div class="w3-container w3-right w3-btn w3-hover-black" data-toggle="tooltip" data-placement="bottom" title="Notifications"  style="background-color:inherit;height:100%;">
+                    <span class="glyphicon glyphicon-bell" style="height:100%;"></span>
+                    <span class="w3-badge">2</span>
+                </div>
+                <!-- /Notifications -->
+            </div>
+        </div>
+        <!-- /Banner-->
+
+		<!-- Main content -->
+		<div id="main" class="w3-row" style="padding:0;height:95%;">
+            <div id="mainLeft" class="w3-container w3-quarter" style="height:100%;padding:0">
+                <!-- LEFT PANEL -->
+                <?php include "php/leftPanel.php" ?>
+                <!-- /LEFT PANEL -->
+            </div>
+            <div class="w3-container w3-threequarter" style="height:100%;padding:0;">
+                    <!-- <ul id="addingFunctsNav" class="nav nav-tabs">
+                        <li class="addingFuncsOptions active" style="width:44%">
+                            <a data-toggle="tab" href="#addSemester" style="text-align:center">+Semester</a>
+                        </li>
+                        <li class="addingFuncsOptions" style="width:44%">
+                            <a data-toggle="tab" href="#addCourse" style="text-align:center">+Course</a>
+                        </li>
+                        <li style="margin-left:2%;margin-right:2%;height:100%;">
+                            <button id="hideAddingFuncs" class="btn btn-danger" style="height:100%;">
+                                <span class="glyphicon glyphicon-minus"></span>
+                            </button>
+                        </li>
+                    </ul> -->
+                <!-- INCLUDE TOPPANEL.PHP -->
+                <div id="mainTop" style="padding:0%;margin:0%;overflow:none;display:none;">
+                    <!-- TOP PANEL -->
+                    <?php include "php/topPanel.php" ?>
+                    <!-- /TOP PANEL -->
+                </div>
+                <div id="mainRight" style="padding:0;height:100%;">
+                    <!-- RIGHT PANEL -->
+                    <?php include "php/middlePanel.php" ?>
+                    <!-- /RIGHT PANEL -->
+                </div>
+            </div>
+		</div>
+		<!-- /Main content -->
+
+        <!-- Diagnostics -->
+        <!-- <div id="diagnostics" class="w3-row" style="display:none;"></div> -->
+        <!-- /Diagnostics -->
+
+        <div id="disclaimer" class="w3-container" style="display:none;">
+            <br><br>
+            <span style="font-weight:bold">Disclaimer:</span><br/>
+            1) This program is subject to change without notice, due to being in its early stages of development.<br/>
+            2) We are in <span style="color:red">NO</span> way affiliated with the University of Guelph, or any other organizations.<br/>
+            3) It is not possible to test everything; there's always room for errors. So please verify
+            all the information before you deem it final. And please report any and all found errors.<br/>
+            4) We do <span style="color:red">NOT</span> store any personal information on our server or database.
+            All information is stored locally on your personal device(s).
+        </div>
+
+	</div>
+
+    <!-- SEMESTER MODAL -->
+    <?php include "php/semesterModal.php"; ?>
+    <!-- /SEMESTER MODAL -->
+
+    <div id="overviewModal" class="modal fade w3-container" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Overview</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="overviewContent">
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" id="printModal">Print</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="optionsModal" class="modal fade w3-container" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Options</h4>
+                </div>
+                <div class="modal-body">
+                    <div id=""> <!-- overviewContent -->
+                        <form>
+                            <label for="fileInput" class="btn btn-warning" style="width:100%;height:100%;">
+                                <i class="fa fa-cloud-upload"></i>
+                                <div style="align-text:center;">Upload Transcript</div>
+                            </label>
+                            <input style="display:none;" id="fileInput" type="file"/>
+                        </form>
+                    </div>
+                    <button id="allToolTips" style="width:100%;" data-dismiss="modal" class="btn btn-primary">Show All ToolTips</button>
+                    <button id="toggleToolTips" style="width:100%;" data-dismiss="modal" class="btn btn-info">Toggle ToolTips</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="pickSubjectScreen" role="dialog">
+        <div class="modal-admin" style="height:90%;">
+            <!-- Modal content-->
+            <div class="modal-content" style="width:90%;left:5%;height:100%;">
+                <div class="modal-header modal-header-success" style="height:10%;">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title" style="text-align:center;">Choose Subject By Name</h3>
+                </div>
+                <div class="modal-body" style="height:90%;">
+                    <!-- <div class="form-group"> -->
+                        <div id="pickSubjectSubjectsName" style="height:100%;"></div>
+                    <!-- </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="input" style="display:none;">
+@ or @ 
+2.00 credits 
+@ 
+(@ or @), (@ or @)  
+(@ or @)  
+4.00 credits 
+2.50 credits 
+@ or (2 of @, @, @, @)  
+(@ or @) or registration in International Development  
+10.00 credits 
+Completion of 7.50 credits including (1 of @, @ , @, @)  
+5.00 credits 
+15.00 credits 
+12.50 credits 
+[@ or (2 of @, @, @, @)]  
+A minimum of 8.00 credits in biology, including @ or @ 
+@, @, @ 
+@, @ 
+12.00 credits including 2.00 in animal sciences. 
+14.00 credits 
+10.00 credits including (@ or @), (@ or @).  
+@, (@ or @)  
+(1 of @, @, @, @, @, @), @ 
+10.00 credits including @, @ 
+12.50 credits including @, @ 
+12.50 credits including (@ or @), @ 
+15.00 credits including @, (@ or @)  
+2.00 credits or (@ or @)  
+7.50 credits or 1.50 credits in Art History. 
+7.50 credits or 1.50 credits in Art History, including @.  
+Admission to London Semester 
+10.00 credits including 2.00 credits in Art History. 
+10.00 credits including 1.00 credits in Art History at the 3000 level. 
+14.00 credits, including 6 credits in Art History. 
+A minimum of 14.00 credits including 2.50 credits in Art History. 
+8.50 credits 
+A minimum of 9.00 credits. 
+12.00 credits, including (1 of @, @, @, @); cumulative average of 75%  
+12.00 credits including (@ or @)  
+A minimum of 14.00 credits. 
+(@ or @), @ 
+@ (may be taken concurrently), @ 
+4.00 credits including @ 
+10.00 credits including @, (1 of @, @, @, @)  
+@, @, @ is strongly recommended  
+9.00 credits including (2 of @, @, @)  
+@, (1 of @, @, @), (@ or @)  
+(1 of @, @, @)  
+0.50 credits in ecology 
+15.00 credits including @ 
+1 of @, @, @, @, @, @, @ 
+2 of @, @, @ 
+(@, @), (1 of @, @, @, @), (1of @, @, @, @)  
+@, (1 of @, @, @, @, @, @)  
+7.50 credits including (1 of @, @, @)  
+@, [1 of @, @, @, (@, @), @]  
+1 of @, @, @ 
+(@ or @), (1of @, @, @, @)  
+(1 of @, @, @, @), (1 of @, @, @, @, @), (@ or @)  
+@, @, (1 of @, @, @)  
+(1of @, @, @), (1 of @, @, @, @)  
+14.00 credits including @, @ 
+12.00 credits 
+2 of @, @, @, @ 
+7.50 credits including @ 
+4U Chemistry, (or equivalent) or @ 
+@, [@ or (@, @)]  
+@, (1 of @, @, @)  
+@, (1 of @, @, @, @)  
+@, (@ or @), (1 of @, @, @)  
+5.00 credits in chemistry including (1.50 credits from @, @, @, @, @, @)  
+@ or equivalent  
+[@, (1 of @, @, @, @)], or [@, (1 of @, @, @, @)]  
+10.00 credits including 1.50 credits in Classics. 
+1.50 credits in Classical Studies courses at the 3000 level 
+1.50 credits in Classical Studies at the 3000 level 
+2.00 credits in CIS courses 
+(@ or @). Recommended (@ or @).  
+@ or work experience in a related field.  
+@, (@ recommended)  
+@, @, (@ or @)  
+(@ or @), @, (@ or @), (@ recommended)  
+(@ or @) @, (@ or @), (@ recommended)  
+7.00 credits in CIS 
+Completion of previous co-op work requirements in @ 
+(1 of @, @, @), (1 of @, @, @, @, @)  
+12.50 credits including @ 
+@, (1 of , @, @, @, @), (1 of @, @, @, @, @, @, @, @)  
+@, (@ or any 1.50 credits in history)  
+@, (@, or @), (1 of @, @, @, @, @)  
+@, (@, or @), (1 of @, @, @, @)  
+@, (1 of @, @, @, @, @, @, @, @, @)  
+@, @, (1 of @, @, @, @)  
+@, (@ or @). A grade average of 70% or more in these courses is recommended.  
+@, @, (1 of @, @, @, @, @, @)  
+@, @, (1 of @, @, @, @, @, @, @)  
+@, @, ( 1 of @, @, @, @), (@ or @)  
+@, (@ or @), (@ or @)  
+@ Students must have completed a minimum of 12 credits.  
+(@ or @), @, (1 of @, @, @, @), @, (2 of @, @, @, @, @, @, @)  
+1 of @, @, @, @, @ 
+12.50 credits including (1 of @, @, @, @)  
+(@ or @), @, (1 of @, @, @)  
+14.50 credits including (1 of @, @, @), @, (@ or @)  
+(@ or @), @, @ 
+(1 of or @, @, @), (@ or @)  
+14.50 credits including @, @, @ 
+@ or 10.00 credits  
+10.00 credits  
+5 credits 
+1 of @, @, equivalent  
+Completion of 4.0 credits including @ 
+@, @, 0.50 credits in calculus  
+@, @, @, @, @ 
+5.00 credits including @ 
+Registration in the B.Eng. program and completion of 6.00 credits of ENGG courses including @ 
+@, @, @, @ 
+(@ or @), (1 of @, @, @)  
+@, @, (1 of @, @, @, @), @ 
+(@ or @), (@ or @), (@ or @), and competency in computing.  
+All 1000 and 2000 level core courses and @ 
+6.00 credits of ENGG courses, @, @, @ 
+1 of @, @, @, @ 
+1.00 credits in English or (@, @)  
+1.00 credits in English. 
+Admission to the London Semester. 
+1 of @, @, @, @, @, @ 
+Minimum of 4.00 credits 
+@ or [(@ or @), (1 of @, @, @, @)]  
+[@ or (2 of @, @, @, @)], @ 
+9.00 credits 
+(1of @, @, @, @), (1of @, @, @, @, @)  
+1 of @, @, @, @ or Registration in BBRM  
+12.00 credits including (1 of @, @, @, @)  
+10.00 credits including (@, @) or (@, @), @ 
+@, ( 1 of @, @, @)  
+5.00 credits, (1 of @, @, @)  
+@ or [@, (@ or @)]  
+10.00 credits including (1 of @, @, @)  
+Minimum of 10.00 credits. Minimum cumulative average of 70%. 
+@. Minimum of 10.00 credits. Minimum cumulative average of 70%.  
+@. Minimum cumulative average of 70%.  
+1 of @, @, @, @, @, @, @, @, @ 
+Minimum of 12.00 credits 
+(@ or @) or (@ or @)  
+15.00 credits including (1 of @, @, @, @, @)  
+(@, @) or @. Minimum of 15.00 credits. Minimum cumulative average of 70%.  
+@. Minimum of 15.00 credits. Minimum cumulative average of 70%.  
+(1 of @, @, @). Minimum of 14.00 credits. Minimum cumulative average of 70%.  
+@. Minimum of 14.00 credits. Minimum cumulative average of 70%.  
+@ or (@, @)  
+7.50 credits 
+16.00 credits including @ 
+@ is recommended  
+7.50 credits. @ and @ are recommended  
+10.00 credits including 1.50 credits in European Studies. 
+10.00 credits, @, @, @ are recommended  
+10.00 credits, (2 of @, @, @, @, @, @, @, @, @)  
+@, @, @, @,  
+4.50 credits 
+@, [1 of @, @, @, (@ or @)]  
+4.50 credits including @ 
+9.50 credits including @, (1 of @, @, @, @, @, @)  
+9.50 credits including (@ or @)  
+2 of @, @, @, (@ or @), @ 
+7.00 credits including (1 of @, @, @)  
+4.50 credits including (@ or @)  
+12.00 credits including @, @ 
+@, @ and 1.00 credit at the 3000 level in Family and Social Relations, Psychology or Sociology  
+10.00 credits including @ 
+12.00 credits including @ 
+9.50 credits 
+15 credits including @, @ 
+(@ or @), (1 of @, @, @, @, @, @)  
+10.00 credits including (@ or @), @ 
+10.00 credits including (1 of @, @, @, @)  
+(@, or @) 0.50 credits at the 3000 or 4000 level in FARE or ECON  
+(1 of @, @, @), 0.50 credits at the 3000 or 4000 level in FARE or ECON  
+10.00 credits including (1 of @, @, @, @, @)  
+10.00 credits including 1 of @, @, @, @, @ 
+(@ or @), (1 of @, @, @), @ 
+8.00 credits in science or engineering 
+2.50 credits at the 3000 level in Food Science 
+(@ or @), (@ or @), (1 of @, @, @ )  
+@, (1 of @, @, @), (1 of @, @, @, @)  
+1 of @, Grade 12U French or permission of the School of Languages and Literatures.  
+@ or equivalent, such as grade 12 French Immersion.  
+10.00 credits including 1.50 credits in French Studies. 
+1.00 credits at the 3000-level in French. 
+4.00 credits, @ is recommended  
+@ or (@ and @)  
+0.50 credits in geography and/or earth science 
+0.50 credits at the 1000 level in Geography 
+7.50 credits, (@ recommended)  
+7.50 credits, (@ and @ recommended)  
+(@ or @), (1 of @, @, @, @, @)  
+7.50 credits including (@ or @)  
+10.00 credits, including @ 
+7.50 credits, (@ or @), (1 of @, @, or another 2000 level earth science or engineering science course is recommended)  
+Grade 12U German or @ 
+10.00 credits including 1.50 credits in German. 
+@ or 4U Greek  
+2.00 credits, including 0.50 credits in History at the 1000 level 
+7.50 credits including 1.00 credits in History 
+7.50 credits including (1 of @, @ or @, @, @)  
+7.50 credits including 1.50 History or equivalent credits 
+7.50 credits including (2 of @, @, @, @, @, @, @, @, @, @, @)  
+7.50 credits including (1 of @, @, @, @)  
+7.50 credits including (1 of @, @, @, @, @)  
+10.00 credits including 1.50 credits in History at the 3000-level 
+10.00 credits including (@ or @)  
+10.00 credits, including 1.50 credits in History at the 3000-level 
+10.00 credits including @.  
+10.00 credits including @, and at least 1.00 credits in History at the 3000 level or above.  
+10.00 credits including 1 of @, @, @ 
+10.00 credits including @ or @ 
+10.00 credits, (1 of @, @, @, @)  
+@ or [@, (1 of @, @, @)]  
+1 of @, @, 0.50 credits in botany  
+(1 of @, @, @, @)  
+1 of @, @, (@, @)  
+9.00 credits including @, @ 
+9.00 credits including @, (@ or @)  
+14.00 credits and a minimum of 700 hours of verified work experience in the hospitality and tourism industry. 
+(1 of @, @, @), (1 of @, @, @, @)  
+14.00 credits including @ 
+Registration in semester 7 of BCOMM:HAFA:C. 
+9.00 credits including (1 of @, @, @)  
+(@ or @) plus 120 hours of placement experience  
+12.50 credits including (1 of @, @, @)  
+15.00 credits including (1 of @, @, @)  
+4.00 credits including @, (@ or @)  
+Admission to London Semester. 
+Admission to Paris Semester. 
+Admission to Krakow Semester. 
+Admission to the Krakow Semester. 
+Admission to the India Semester. 
+Admission to the Latin America semester. 
+5.0 credits 
+(4U Calculus and Vectors or equivalent), (4U Physics or @ or equivalent)  
+Admission to the Paris Semester. 
+Admission to the Shanghai semester. 
+@, 90 hours of approved community service.  
+10.00 credits including 1.50 credits in Italian. 
+@ or Grade 12 Latin  
+Grade 12 Latin or @ 
+9:00 credits 
+12.50 credits. 
+(1 of @, @, @), @, (1 of @, @, @)  
+14.00 credits, minimum 70% cumulative average 
+@, minimum 70% cumulative average  
+(1 of @, @, @), 10.00 credits, minimum 70% cumulative average  
+14.50 credits 
+9.50 credits, 
+@, (1 of @, @, @, @, @). Although not required, it is recommended that students take @ prior to @.  
+10.00 credits including ( 1 of @, @, @, @, @)  
+10.00 credits including @, (@ or @), @, (1 of @, @, @)  
+15.00 credits including @, @ 
+15.00 credits including @, @, @ 
+4U Advanced Functions 
+1 of 4U Advanced Functions, 4U Advanced Functions and Calculus or equivalent 
+4U Calculus and Vectors or 4U Advanced Functions 
+1 of 4U Calculus and Vectors, 4U Advanced Functions and Calculus or Grade 12 Calculus 
+(1 of @, @, @), (@ or @)  
+(@ or @), 1.00 credits in MATH or STAT at the 2000 level or above  
+(1 of @, @, @), 0.50 credits in statistics  
+At least 3.0 mathematics and/or statistics credits at the 3000 level or above. 
+4.00 credits including (1 of @, @, @, @)  
+@, @. (@ is strongly recommended.)  
+@, (@ is recommended)  
+@ or equivalent laboratory experience at the discretion of the student\'s faculty advisor. Normally, students must have completed 6 semesters in an appropriate program in the biological sciences.  
+1of @, @, @. Normally, students must have completed 6 semesters in an appropriate program in the biological sciences. Minimum 70% cumulative average in science courses during the first 6 semesters of the relevant majors.  
+@ or equivalent laboratory experience at the discretion of the student\'s faculty advisor. Normally, students must have a minimum of 3.00 credits in 3000 or 4000 level BIOC, MBG, MCB OR MICR courses.  
+@, 0.50 credits in statistics  
+(@ or @ ), @ 
+70% in @ and 75% in @ 
+A minimum grade of 70% in @.  
+@ or @. Some computer experience is recommended.  
+@, @ is recommended  
+(@ or @), a minimum grade of 70% in @. (@ or @ may be taken as corequisite)  
+A minimum grade of 70% in @ 
+@ on piano.  
+A minimum grade of 70% in @ and (2 of @, @, @, @).  
+3.00 credits in music courses including a minimum grade of 70% in @, (@ or @).  
+4.00 credits in music courses including a minimum grade of 70% in @ 
+@, (2 of @, @, @, @)  
+7.50 credits including @ or @ 
+7.50 credits including (@ or @), @ 
+7.50 credits including @, @ 
+3.00 credits in Music 
+Completion of the music core. 
+4U Chemistry or 4U Physics 
+@, [@ or ( @, @)]  
+@, @, @ is highly recommended  
+1.50 credits in NANO courses at the 3000 level. 
+(@ or @), @, @, (@ or @), @ 
+9.50 credits including @ 
+14.50 credits including @, @ 
+14.50 credits including, [1 of @, (@ or @), @], (@ or @)  
+@, (1 of @, @, @, @, @)  
+@, (@ or @), @ 
+1 of @, (@, @), @ 
+10.00 credits including at least 1.50 credits in biology. 
+1.50 credits in biology 
+2.00 credits or (1 of @, @, @)  
+0.50 credits in either Philosophy or Political Science 
+1.50 credits in Philosophy or 7.50 credits or @ 
+1.50 credits in Philosophy or 7.50 credits 
+1.50 credits in Philosophy 
+1.50 credits in Philosophy, including one of @, @, @ 
+1.50 credits in Philosophy. @, @ are recommended.  
+1.00 credits in Philosophy at the 3000 level. @ recommended  
+1.00 credits in Philosophy at the 3000 level or @ 
+@, 1.00 credits in Philosophy at the 3000 level  
+13.00 credits and a minimum cumulative average of 70%. 
+@ or @, 1.00 credits in Philosophy at the 3000 level  
+2.00 credits in Philosophy including 1.00 credits at the 3000 level 
+2.50 credits in Philosophy or @ 
+1.00 credits in Philosophy at the 3000 level 
+1.00 credits in Philosophy at the 3000-level 
+(1 of @, @, @), (1 of 4U Physics, Grade 12 Physics, @)
+
+###
+##@
+
+###022###
+['4U Physics', Grade 12 Physics]
+string = '###' + index + '###';
+
+
+
+
+
+(1 of 4U Physics, OAC Physics, @), one 4U or OAC Mathematics course  
+(1 of 4U Physics, Grade 12 Physics, @, @), one 4U or Grade 12 Mathematics course  
+1.00 credits in physics (excluding @, @, @)  
+@ or [(@ or @), (1 of @, @, @)]  
+0.50 credits in physics at the 1000 level (excluding @, @), 0.50 credit in mathematics at the 1000 level  
+@ or [(@ or @), (1 of @, @, @)], (1 of @, @, @, @)  
+(1 of @, @, @), @, @, @, @ 
+(1 of @, @, @), (@ or @), (@ or @)  
+2.00 PHYS credits at the 2000 level or higher. 
+0.50 credits in biochemistry, (@ or @)  
+(1 of @, @, @), (@ or @), [(@, @) or (@ , @, @)]  
+(1 of @, @, @), (@ or @), [(@ , @) or (@ , @, @)]  
+1 of @, @, (@, @, @)  
+(1 of @, @, @, @ , @, @), @ 
+5.00 credits including (2 of @, @, @, @)  
+4.00 credits including 1 of @, @, @ 
+Minimum of 10.00 credits, 2.00 of which must be in Political Science. 
+1.50 credits at the 3000 level in Political Science or equivalent 
+@ and at least 1.00 credits at the 3000 level in the Political Thought stream.  
+1.00 credits at the 3000-level in the Law, Policy and Governance stream or the Comparative Politics stream. @ recommended.  
+2 of @, @, @ and 1.00 credits in the Public Policy, Governance and Law or Canadian Politics.  
+@ and 1.00 credits at the 3000 level in the Canadian Politics stream.  
+@, (2 of @, @, @, @, @)  
+(1 of @, @, @); and at least 1.00 credits at the 3000 level in the International Relations and Global Studies stream.  
+@ and 1.00 credits at the 3000 level in the Public Policy, Governance and Law stream or the Canadian Politics stream.  
+(2 of @, @, @), 1.00 credits in the Public Policy, Governance and Law stream or the Canadian Politics stream.  
+@, (2 of @, @, @, @, @, @, @, @, @, @, @)  
+(2 of @, @, @), (2 of @, @, @, @, @, @, @, @, @, @)  
+(1 of @, @, @), 1.00 credits at the 3000 level in Political Science.  
+(2 of @, @, @, @), (2 of @, @, @, @, @,@, @, @, @, @)  
+(1 of @, @, @), (1.0 credits at the 3000 level in the Comparative Politics stream or 1.00 credits at the 3000 level in the International Relations and Global Studies stream).  
+(@ or @) and 1.00 credits at the 3000 level in the Comparative Politics stream.  
+@ and 1.00 credits at the 3000 level in the International Relations and Global Studies stream.  
+(2 of @, @, @, @, @, @, @, @, @, @, @, @, @)  
+(@ or @) and at least 1.00 credits at the 3000 level in the Public Policy, Governance and Law stream.  
+(@ or @), (2 of @, @, @, @, @, @, @, @, @, @, @)  
+14.00 credits, including 1.00 credits in Political Science at the 3000 level. 
+70% average in all POLS courses. Recommendation: Students with less than a 75% average are advised not to take this course. 
+1 of @, @ 
+(1 of @, @, @),..@ 
+(1 of @, @, @), (1 of @, @, @)  
+@ (also see psychology core statement)  
+@, (@ or @) (also see psychology core statement)  
+@, @ (also see psychology core statement)  
+1.50 credits in Psychology or 1.50 credits in Philosophy 
+(1 of @, @, @) and at least 1.00 credits of the psychology core (also see psychology core statement)  
+@ or @ (also see psychology core statement)  
+@, (1 of @, @ or @)  
+(@ or @) (also see psychology core statement)  
+1 of @, @, @, work experience in related fields, Instructor consent (also see psychology core statement)  
+Previous study related to the topic area (also see psychology core statement) 
+(@ or @) and 3.00 credits in PSYC courses (also see psychology core statement)  
+1 of @, @, @, @ (also see psychology core statement)  
+(1 of @, @, @), (1 of @, @, @) and at least 1.00 credits at the 2000 level of the psychology core.  
+(1 of @, @, @), (1 of @, @, @) and at least 1.00 credits at the 2000 level of the psychology core) or enrolment in the B.Comm Program, Human Resources Management Major.  
+14 credits including @, @ 
+(1 of @, @, @, @) (also see psychology core statement)  
+4.00 credits in psychology, with at least 1.00 credits at the 3000 level or above. 
+4.00 credits in psychology, with at least 1.00 credits at the 3000 level or above 
+4.00 credits in psychology, with at least 1.00 credits at the 3000 level or above and previous study related to the topic area (also see psychology core statement)  
+(1 of @, @, @), (also see psychology core statement)  
+15.0 credits 
+14.00 credits (including 4.00 credits in psychology, with at least 1.00 credits at the 3000 level or above) 
+Will be indicated by the department when the course is offered. 
+(1 of @, @, @), (1 of @, @, @, @, @, @)  
+9.00 credits including @, (1 of @, @, @), (@ or @)  
+10.00 credits including (1 of @, @, @), @ 
+14.00 credits including (@ or @), ( @ or @ )  
+14.00 credits including (2 of @, @, @, @, @), (1 of @, @, @), (@ or @)  
+14.00 credits including @, @, @ 
+12.50 credits including (@ or @), @, @ 
+12.50 credits including (1 of @, @, @), @ 
+12.50 credits including (1 of @, @, @), (@ or @)  
+12.50 credits including @, (@ or @)  
+12.50 credits including @, @, @ 
+15.00 credits including @, @, @. CJPP students must have 15.00 credits including @, @, or @ 
+(1 of @, @, @), @ 
+12.50 credits including (@ or @), (@ or @)  
+12.50 credits including @, (1 of @, @, @)  
+(1 of @, @, @, @), (@ or @)  
+(@ or @), (@, @ are recommended)  
+10.00 credits including 1.50 credits in Spanish. 
+1.00 credits from the following: (@ or @), (@ or @), @ 
+(@ or @), (@ or @),  
+1 of 4U Calculus and Vectors, Advanced Functions and Calculus, OAC Calculus, @ 
+(4U mathematics or equivalent) or 0.50 credit in mathematics 
+(4U mathematics or equivalent) or 0.50 credit in mathematics. 
+(1 of @, @, @), (1 of @, @, @), @ 
+(1 of @, @, @, @), (1 of @, @, @)  
+(1 of @, @, @), @, @ 
+(1 of @, @, @), @, @; (@ can be taken as co-requisites).  
+(1 of @, @, @), @, @; (@ can be taken as co-requisite).  
+3.00 credits in Studio Art 
+@ and 3.50 credits in Studio Art  
+@,  
+3 of @, @, @, @, @ 
+A minimum of 2 courses at the 4000-level in Studio Arts, a minimum cumulative average of at least 80% in SART courses and ARTH courses  
+A minimum of 2 courses at the 4000-level in Studio Arts, a minimum cumulative average of at least 80% in SART courses and ARTH courses.  
+7.50 credits, including @, @ 
+10 credits 
+7.50 credits, including @ 
+2.50 credits in Theatre Studies including (1 of @, @, 1.00 credits in English)  
+@ or 1.00 credits in English  
+2.50 credits in Theatre Studies including (1 of @, @, @)  
+@ or (@, @ )  
+@, (1 or @, @, @)  
+3.00 credits in Theatre Studies including [(@, @) or (@, @)], (1 of @, @, @, @)  
+3.00 credits in Theatre Studies including one of the following, as appropriate to the topic of the course: @, @, @, @.  
+(@ or @) or 1.00 credits in English.  
+10.00 credits including 1.00 credits in Theatre Studies. 
+[@, @, (2 of @, @, @), @, @, (@ or @)] or (@, @, @, @, @)  
+[(@ or @), @, @] or (@ or @)  
+@, (1 of @, @, @ ), (1 of @, @, @, @)  
+@, @, @ (@ may be taken concurrently)  
+@ (or equivalent)  
+(1 of @, @, @), @, (@ or @)  
+All Phase 1 courses. 
+All Phase 2 courses. 
+All Phase 3 courses. 
+All Phase 1, Phase 2 and Phase 3 courses. 
+@, @ is strongly recommended.  
+@, @, (@ or @ is recommended)  
+@, (@ or @ is recommended)  
+15.00 credits including (@ or @), @ 
+    </div>
+	<script>
+        $(document).ready(function() {
+            /* Adjusts visible panels based on screen dimensions. */
+            // if ($(window).width() < 900){
+            //     $("#mainRight").css("display", "none");
+            //     $("#mainLeft").removeClass("w3-quarter");
+            // } else {
+            //     $("#miniTabs").css("display", "none");
+            // }
+
+            /* Enabled tooltips. */
+            $('[data-toggle="tooltip"]').tooltip();
+
+            /* Controls Course & Info tabs visibility. */
+            // $('.TabBtn').click(function(){
+            //     $('.TabBtn').toggle();
+            // });
+
+            /* Controls Adding page. */
+            // $("#addPanelBtn").click(function(){
+            //     if ($(window).width() < 900){
+            //         if($('#mainRight').is(':visible')){
+
+            //         }
+            //         //$('#mainLeft').toggle();
+            //     }
+            //     $('#mainTop').toggle();
+            // });
+
+
+            
+
+            /* Print screen dimensions to Diagnostics section. */
+            // $("#diagnostics").append("Screen width = "+$(window).width()+"</br>Screen height = "+$(window).height());
+        });
+
+
+	</script>
+</body>
+</html>
