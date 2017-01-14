@@ -14,17 +14,10 @@ function CleanData(lines){
 	String.prototype.replaceAt = function (index, substring) {
 		return this.substr(0, index) + substring + this.substr(index + substring.length);
 	};    // Inserts substring at given index in string (returns string).
-	function ConvertToAlphabet(string) {
-		var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		var char = alphabet.charAt(0);
-		for (var index = 0, charIndex = 0, len = (string.length); index < len; index++) {
-			if (string[index] === '@') {				// Detects symbol.
-				string = string.replaceAt(index, char);	// Replace with letter.
-				char = alphabet.charAt(++charIndex);	// Increment alphabet index.
-			}
-		}
-		return string;
-	}                           // Replaces all instances of the '@' symbol in string with a alphabetical letter (returns string).
+	function alphabetize (string, arr = string.split(''), char = 65) {
+        	const result = arr => arr.reduce((a,b) => a.concat(b === '@' ? String.fromCharCode(char++) : b),[]);
+        	return result(arr).join('');
+    	} // String -> String.
 	function TrimString(string){
 		return string.trim();
 	}                                   // Trims leading & trailing whitespaces (returns string).
