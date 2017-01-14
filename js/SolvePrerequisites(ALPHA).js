@@ -54,16 +54,38 @@ function primaryStrCleaning (string) {
     return string;
 }     // String -> String.
 function secondaryStrCleaning (string) {
-    /* FUNCTION LEGEND
-     * 1. case01():      converts "1 or" patterns to "1 of" patterns.
-     */
+/* FUNCTION LEGEND
+    * 1. case01():      converts "1 or" patterns to "1 of" (returns string).
+    * 2. case02():      converts "+ or" patterns to "or" (returns string).
+    * 3. case03():      converts either "[1-3] of or" or "[1-3]of or" patterns to "[1-3]of" (returns string).
+    * 4. case04():      converts "..." patterns to "." (returns string).
+*/
 
     function case01 (string) {
-        return string.replace(/(1)\sor/g, "$1 of");
+        return string.replace(/(1)\s(or)/g, "$1 of");
     }   // String -> String.
+    function case02 (string) {
+        return string.replace(/\+\s(or)/g, "or");
+    }   // String -> String.
+    function case03 (string) {
+        return string.replace(/([1-3])(of|\sof)\s(or)/g, "$1$2");
+    }   // String -> String.
+    function case04 (string) {
+        return string.replace(/\.\.+/g, '.');
+    } // String -> String.
 
     string = case01 (string);
     console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- case01()");
+
+    string = case02 (string);
+    console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- case02()");
+
+    string = case03 (string);
+    console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- case03()");
+
+    string = case04 (string);
+    console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- case04()");
+
     return string;
 }   // String -> String.
 function formatString (string) {
