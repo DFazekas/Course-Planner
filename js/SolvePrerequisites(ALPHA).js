@@ -188,16 +188,15 @@ function genCombinations (string) {
                     courses.shift();
                     return courses;
                 }
-                function allCombinations (course, delim){
+                function allCombinations (courses, delim){
                     var result = [];
-                    var f = function(prefix, course, delim){
-                        for (var a = 0; a < course.length; a++){
-                            course[a] += delim;
-                            result.push(prefix + course[a].slice(0, -1));
-                            f(prefix + course[a], course.slice(a + 1), delim);
+                    var f = function (prefix, courses, delim){
+                        for (var a = 0; a < courses.length; a++) {
+                            result.push(prefix + courses[a]);
+                            f ((prefix + courses[a] + delim), (courses.slice(a + 1)), delim);
                         }
                     };
-                    f('', course, delim);
+                    f('', courses, delim);
                     return result;
                 }
                 function filterCombinations (solution, delim, numElements) {
