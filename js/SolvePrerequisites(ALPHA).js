@@ -1,10 +1,16 @@
+function consolePrint (data, name, location) {
+    console.log(name+" = |", data ,"| {"+typeof data, " ", data.length+"} -- "+location);
+}
 function main (string) {
 /* FUNCTION LEGEND
     * 1. cleanString():             main function for cleaning and formating string (returns string).
+    * 2. computeComb():             main function for computing combinations (returns array).
 */
 
-    console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- main()");
+    consolePrint (string, "string", "main()");
     string = cleanString (string);
+    consolePrint (string, "string", "cleanString()");
+    var temp = genCombinations (string);
 
     return string;
 }           // String -> String.
@@ -36,16 +42,16 @@ function cleanString (string) {
         }                            // String -> String.
 
         string = trimOuterWhiteSpaces (string);
-        console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- trimOuterWhiteSpaces()");
+        //consolePrint (string, "string", "trimOuterWhiteSpaces()");
 
         string = trimTrailComma (string);
-        console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- trimTrailComma()");
+        //consolePrint (string, "string", "trimTrailComma()");
 
         string = trimSpaceLeadComma (string);
-        console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- trimSpaceLeadComma()");
+        //consolePrint (string, "string", "trimSpaceLeadComma()");
 
         string = trimSpaceAdjParenth (string);
-        console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- trimSpaceAdjParenth()");
+        //consolePrint (string, "string", "trimSpaceAdjParenth()");
 
         return string;
     }     // String -> String.
@@ -71,16 +77,16 @@ function cleanString (string) {
         }   // String -> String.
 
         string = case01 (string);
-        console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- case01()");
+        //consolePrint (string, "string", "case01()");
 
         string = case02 (string);
-        console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- case02()");
+        //consolePrint (string, "string", "case02()");
 
         string = case03 (string);
-        console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- case03()");
+        //consolePrint (string, "string", "case03()");
 
         string = case04 (string);
-        console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- case04()");
+        //consolePrint (string, "string", "case04()");
 
         return string;
     }   // String -> String.
@@ -107,16 +113,16 @@ function cleanString (string) {
         }                               // String -> String.
 
         string = alphabetize (string);
-        console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- alphabetize()");
+        //consolePrint (string, "string", "alphabetize()");
 
         string = n_of (string);
-        console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- n_of()");
+        //consolePrint (string, "string", "n_of()");
 
         string = parenthToBrace (string);
-        console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- parenthToBrace()");
+        //consolePrint (string, "string", "parenthToBrace()");
 
         string = parenthEncaseStr (string);
-        console.log("string = ", string, " {"+typeof string, " ", string.length+"} -- parenthEncaseStr()");
+        //consolePrint (string, "string", "parenthEncaseStr()");
 
         return string;
     }           // String -> String.
@@ -127,3 +133,37 @@ function cleanString (string) {
 
     return string;
 }    // String -> String.
+function genCombinations (string) {
+/* FUNCTION LEGEND
+    * 1. extractSubset(): Searches for subset within string, returning subset, else false (returns either string or false).
+    * 2. computeSolution(): Computes the solution of the subset (returns array).
+    * 3. solutionSwapSubset(): Swaps subset with solution in string (returns string).
+*/
+    function extractSubset (string){
+        var startPos = string.lastIndexOf('['), endPos = string.indexOf(']', startPos);
+        //consolePrint(string, "string", "extractSubset");
+        console.log("start = ", startPos, "end = ", endPos);
+        if (startPos >= 0 || endPos > 0)
+            return string.substring(startPos + 1, endPos);
+
+        return false;
+    }
+    function computeSolution (subset){
+        var solution = [];
+        return solution;
+    }
+    function solutionSwapSubset (string, subset, solution) {
+        return string.replace('['+subset+']', solution);
+    }
+    
+    var subset = extractSubset (string);
+    if (subset){
+        consolePrint (subset, "subset", "computeComb()");
+        var solution = computeSolution (subset);
+        string = solutionSwapSubset (string, subset, "{}");
+        consolePrint (string, "string", "computeComb()");
+        string = genCombinations (string);
+    }
+
+    return string;
+}    // String -> Array.
