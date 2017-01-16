@@ -4,7 +4,7 @@ function consolePrint (data, name, location) {
 function main (string) {
 /* FUNCTION LEGEND
     * 1. cleanString():             main function for cleaning and formating string (returns string).
-    * 2. computeComb():             main function for computing combinations (returns array).
+    * 2. genCombinations():             main function for computing combinations (returns array).
 */
 
     consolePrint (string, "string", "main()");
@@ -141,27 +141,120 @@ function genCombinations (string) {
 */
     function extractSubset (string){
         var startPos = string.lastIndexOf('['), endPos = string.indexOf(']', startPos);
-        //consolePrint(string, "string", "extractSubset");
-        console.log("start = ", startPos, "end = ", endPos);
-        if (startPos >= 0 || endPos > 0)
-            return string.substring(startPos + 1, endPos);
-
-        return false;
+        return (startPos >= 0 || endPos ? string.substring(startPos + 1, endPos) : false);
     }
     function computeSolution (subset){
-        var solution = [];
-        return solution;
+    /* FUNCTION LEGEND
+        * 1. detectCase():  Detects type of subset to compute (returns string).
+        * 2. interpretCase(): Computes subset solution based on type (returns array).
+    */
+        function detectCase (subset){
+            if ((subset.search("of") != -1) && subset.search(/\{/) != -1)
+                return "nestedNOf";
+            else if (subset.search("of") != -1)
+                return "nOf";
+            else if ((subset.search("or") != -1) && (subset.search(/\+/) != -1))
+                return "orWithAnd";
+            else if (subset.search('or') != -1)
+                return "or";
+            else if (subset.search(/\+/) != -1)
+                return "and";
+            else
+                return "unique";
+        }
+        function interpretCase (type, subset) {
+        /* FUNCTION LEGEND
+            * 1. nestedNOfCase():
+            * 2. nOfCase(): Computes course combinations with "nOf" syntax (returns array).
+            * 3. orWithAndCase():
+            * 4. orCase():
+            * 5. andCase():
+            * 6. uniqueCase():
+        */
+            function nestedNOfCase (subset) {}
+            function nOfCase (subset) {
+            /* FUNCTION LEGEND
+                * 1. extractCourses():  Creates an array of the courses within the subset (returns array).
+                * 2. allCombinations(): Computes an array of all possible course combinations (returns array).
+                * 3. filterCombinations(): Filters down feasible course combinations (returns array).
+            */
+                function extractCourses (subset) {
+                    var temp = subset.split(' ');
+                    var courses = (temp.filter(function (value) {
+                        return value.length > 0;
+                    })).map(function (value) {
+                        return value.replace(/\,/g, '');
+                    });
+                    courses.shift();
+                    return courses;
+                }
+                function allCombinations (course, delim){
+                    var result = [];
+                    var f = function(prefix, course, delim){
+                        for (var a = 0; a < course.length; a++){
+                            course[a] += delim;
+                            result.push(prefix + course[a].slice(0, -1));
+                            f(prefix + course[a], course.slice(a + 1), delim);
+                        }
+                    };
+                    f('', course, delim);
+                    return result;
+                }
+                function filterCombinations (solution, delim, numElements) {
+                    var output = [];
+                    for (var a = 0; a < solution.length; a++){
+                        var num = solution[a].split(delim).length;
+                        if (num == numElements)		output.push(solution[a]);
+                    }
+                    //consolePrint(output, "output", "filterCombinations");
+                    return output;
+                }
+                var delim = '+';
+                return filterCombinations (allCombinations(extractCourses(subset), delim), delim, subset[0]);
+            }
+            function orWithAndCase (subset) {}
+            function orCase (subset) {}
+            function andCase (subset) {}
+            function uniqueCase (subset) {}
+
+            var solution = [];
+            switch (type){
+                case "nestedNOf":
+                    console.log("nestedNOf found");
+                    break;
+                case "nOf":
+                    solution = nOfCase (subset);
+                    console.log("nOf found");
+                    break;
+                case "orWithAnd":
+                    console.log("orWithAnd found");
+                    break;
+                case "or":
+                    console.log("or found");
+                    break;
+                case "and":
+                    console.log("+ found");
+                    break;
+                case "unique":
+                    console.log("unique case found");
+                    break;
+            }
+            return solution;
+        }
+
+        return interpretCase(detectCase(subset), subset);
     }
     function solutionSwapSubset (string, subset, solution) {
-        return string.replace('['+subset+']', solution);
+        return string.replace('['+subset+']', '{'+solution+'}');
     }
     
     var subset = extractSubset (string);
     if (subset){
-        consolePrint (subset, "subset", "computeComb()");
+        consolePrint (subset, "subset", "genCombinations()");
         var solution = computeSolution (subset);
-        string = solutionSwapSubset (string, subset, "{}");
-        consolePrint (string, "string", "computeComb()");
+        consolePrint (solution, "solution", "genCombinations()");
+        string = solutionSwapSubset (string, subset, solution);
+        consolePrint (string, "string", "genCombinations()");
         string = genCombinations (string);
     }
 
