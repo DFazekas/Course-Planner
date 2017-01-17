@@ -157,7 +157,7 @@ function genCombinations (string) {
                 return "orWithAnd";
             else if (subset.search('or') != -1)
                 return "or";
-            else if (subset.search(/\+/) != -1)
+            else if (subset.search(/\,/) != -1)
                 return "and";
             else
                 return "unique";
@@ -168,7 +168,7 @@ function genCombinations (string) {
             * 2. nOfCase(): Computes course combinations with "nOf" syntax (returns array).
             * 3. orWithAndCase():
             * 4. orCase():
-            * 5. andCase():
+            * 5. andCase(): Computes course combinations with "," syntax (returns array).
             * 6. uniqueCase():
         */
             function nestedNOfCase (subset) {}
@@ -213,35 +213,44 @@ function genCombinations (string) {
             }
             function orWithAndCase (subset) {}
             function orCase (subset) {}
-            function andCase (subset) {}
+            function andCase (subset) {
+                var numNested = (subset.match(/\{/g) ? (subset.match(/\{/g)).length : 0);
+                if (numNested > 0) {
+                    var tempList = (subset.replace(/[{}]/g, '')).replace(/\,/g, ' +');
+                    return ((tempList.split('+')).map(function(value){
+                        return value.trim();
+                    })).join('+');
+                }   // Addition with nested solutions.
+                else {
+                    return ((subset.split(',')).map(function(value){
+                        return value.trim();
+                    })).join('+');
+                }                 // Addition without nested solutions.
+            }
             function uniqueCase (subset) {}
 
-            var solution = [];
             switch (type){
                 case "nestedNOf":
                     console.log("nestedNOf found");
-                    break;
+                    return [];
                 case "nOf":
-                    solution = nOfCase (subset);
                     console.log("nOf found");
-                    break;
+                    return nOfCase (subset);
                 case "orWithAnd":
                     console.log("orWithAnd found");
-                    break;
+                    return [];
                 case "or":
                     console.log("or found");
-                    break;
+                    return [];
                 case "and":
-                    console.log("+ found");
-                    break;
-                case "unique":
+                    console.log("and found");
+                    return andCase (subset);
+                default:
                     console.log("unique case found");
-                    break;
+                    return [];
             }
-            return solution;
         }
-
-        return interpretCase(detectCase(subset), subset);
+        return interpretCase (detectCase(subset), subset);
     }
     function solutionSwapSubset (string, subset, solution) {
         return string.replace('['+subset+']', '{'+solution+'}');
