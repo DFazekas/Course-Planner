@@ -1,5 +1,6 @@
 <?php
     $conn = connect(); 
+
     $sql = "SELECT * FROM PlaintextCourses";
     $result = $conn->query($sql);
 
@@ -30,6 +31,11 @@
         $username = "a4242065_name";
         $password = "Pillowchair23";
         $dbname = "a4242065_data";
+
+        // $servername = "mysql9.000webhost.com";
+        // $username = "a7958014_a";
+        // $password = "pass1word";
+        // $dbname = "a7958014_a";
 
         $conn = new mysqli($servername, $username, $password, $dbname);
         
