@@ -32,12 +32,12 @@
                 <span class="glyphicon glyphicon-chevron-left"></span>
             </button>
 
-            <div data-toggle="tooltip" data-placement="top" title="Overview">
-                <button type="button" class="w3-container w3-btn" data-toggle="modal"
-                     data-target="#overviewModal" style="width:50%;height:30px;">
-                    <span class="glyphicon glyphicon-search"></span>
+            <div data-toggle="tooltip" data-placement="top" title="Overview/Printing">
+                <button class="w3-container w3-btn w3-blue w3-hover-white" data-toggle="modal"
+                     data-target="#overviewModal" style="width:50%;height:30px;" id="openOverviewButton">
+                    <span class="glyphicon glyphicon-search" style="color:black"></span>
                     <span>
-                        <h4 id="currentSem" style="display:inline;"></h4>
+                        <h4 id="currentSem" style="display:inline;color:black;"></h4>
                     </span>
                 </button>
             </div>
@@ -59,23 +59,26 @@
                 <label class="codeLabelName" value='false'>Name</label>
             </td>
         </tr>
-        <tr style="width:40%;display:inline-block;">
+        <tr style="width:39%;display:inline-block;">
             <td style="width:100%;display:block;">
                 <div class="slideOne">  
                     <input type="checkbox" slider="true" value="None" id="leftPanelNameCodeButton" name="check" />
-                    <label for="leftPanelNameCodeButton" data-toggle="tooltip" data-placement="top" title="Course Name/Code"></label>
+                    <label for="leftPanelNameCodeButton" data-toggle="tooltip" data-placement="top" title="View&nbsp;By: Name/Code"></label>
                 </div>
             </td>
         </tr>
-        <tr style="width:30%;display:inline-block;">
+        <tr style="display:inline-block;">
             <td style="display:block;text-align:left;">
                 <label class="codeLabelName" value='true'>Code</label>
             </td>
         </tr>
     </table>
 
-    <div id="semesterCourses" style="width:90%;height:69%;margin-left:5%; margin-top:0px;
-                                    padding:8px 0px 8px 8px;overflow-y:auto;overflow-x:hidden;"></div>
+    <div  style="width:90%;height:69%;margin-left:5%; margin-top:0px;
+                                    padding:8px 0px 8px 8px;overflow-y:auto;overflow-x:hidden;">
+        <span id="leftUserSemesterCourses"></span>
+        <span id="leftSubjectSemesterCourses"></span>
+    </div>
     
     <!-- /Course section -->
 
@@ -86,7 +89,7 @@
 
     <div style="position:absolute;display:block-inline;bottom:0px;width:100%;background-color:#cdffcc;
         padding-bottom:2.5%;padding-top:2.5%;height:15%;">
-        <table style="width:100%;">
+        <table style="width:100%;height:100%;">
             <!-- <tr>
                 <td>
                     <div>
@@ -100,11 +103,11 @@
                     </div>
                 </td>
             </tr> -->
-            <tr>
-                <td>
+            <tr style="padding:0;margin:0;">
+                <td style="padding:0;margin:0;">
                     <!-- +Semester tab -->
-                    <div id="addSemester" class="tab-pane fade in active" style="height:5%;">
-                        <form id="" class="form" role="form">
+                    <div id="addSemester">
+                        <form>
                             <table style="width:100%;">
                                 <tr style="width:100%;">
                                     <td style="width:10%;vertical-align:top">
@@ -145,7 +148,7 @@
                 <td>
                     <table style="width:100%;">
                         <tr style="width:100%;">
-                            <td style="width:2%;"></td> <!-- Just for spaces -->
+                            <td style="width:2%;"></td>
                             <td style="width:46%;text-align:center;">
                                 <button id="remSemBtn" type="button" class="btn btn-danger" 
                                     style="width:100%;"
@@ -153,7 +156,7 @@
                                 <i class="material-icons">delete</i>
                                 </button>
                             </td>
-                            <td style="width:2%;"></td> <!-- Just for spaces -->
+                            <td style="width:2%;"></td>
                             <td style="width:46%;text-align:center;">
                                 <button id="clearAllSemBtn" type="button" class="btn btn-danger" 
                                     style="width:100%;"
@@ -161,7 +164,7 @@
                                 <i class="material-icons">delete_forever</i>
                                 </button>
                             </td>
-                            <td style="width:2%;"></td> <!-- Just for spaces -->
+                            <td style="width:2%;"></td>
                         </tr>
                     </table>
                 </td>
