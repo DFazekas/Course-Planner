@@ -4,11 +4,13 @@
 		<li class="active" id="middlePanelNav1"  type="button" data-toggle="tooltip" data-placement="top" title="Subjects and Filters" style="width:50%;height:100%;">
             <a data-toggle="tab" href="#firstPanel" style="text-align:center;height:100%;">
                 <i class="material-icons" style="font-size:25px">dashboard</i>
+                Subjects And Filters
             </a>
         </li>
 		<li id="middlePanelNav2" type="button" data-toggle="tooltip" data-placement="top" title="View Course Cards" style="width:50%;height:100%;">
             <a class="TEMP" data-toggle="tab" href="#secondPanel" style="text-align:center;height:100%;">
                 <i class="material-icons" style="font-size:25px">description</i>
+                Course Cards
             </a>
         </li>
 	</ul>
@@ -225,3 +227,6 @@
 
 	}
 </style>
+
+
+
