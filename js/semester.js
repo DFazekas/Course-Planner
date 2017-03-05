@@ -26,19 +26,20 @@ $(document).on('click', '#addSemesterBtn', function(){
 
 // submitSemesterOpen()
 $(document).on('click', '#addSemOpen', function(){
-	addSelectedSemester()
+	addSelectedSemester();
+	// tutorialStep(1, false);
 	return;
 });
 
 // submitSemesterClose()
-$(document).on('click', '#addSemSubmit', function(){
+$(document).on('click', '#addSemSubmit', function(){ // depreciated
 	$('#addSemScreen').modal('hide');
-	addSelectedSemester()
+	addSelectedSemester();
 	return;
 });
 
 // submitSemesterToEnd()
-$(document).on('click', '#addFinalSem', function(){
+$(document).on('click', '#addFinalSem', function(){ // No longer used
 	var year = 0;
 	var term = 0;
 
@@ -59,7 +60,7 @@ $(document).on('click', '#addFinalSem', function(){
 	for (var i = 0; i < numSemesters; i++) {
 		if (SEMESTERS[i].year == year) {
 			if (SEMESTERS[i].term == term) {
-				alert("You Already Have This Semester.");
+				bootbox.alert({message: "You Already Have This Semester.", backdrop: true, size: 'small'});
 				return;
 			}
 		}
@@ -80,6 +81,7 @@ $(document).on('click', '#incrementSemester', function() {
     } else {
     	$("#selTerm option:selected").next().prop("selected", true);
 	}
+	ableAddSemester();
     return;
 });
 
@@ -92,13 +94,33 @@ $(document).on('click', '#remSemBtn', function(evt){
 	if (warnNoSem()) {
 		return;
 	}
-	if (!confirm('Are you sure you want to remove this semester? This CANNOT be undone.')) {
-		return;
-	}
 
-    /* Remove and Display */
-    remSemesters(getSemesterIndex(), 1); // Remove at index = semesterNum
-    displayPlans();
+	bootbox.confirm({
+	    message: 'Are you sure you want to remove this semester?\nThis CANNOT be undone.',
+	    backdrop: true,
+	    buttons: {
+	        cancel: {
+	            label: 'Cancel',
+	            className: 'btn-default'
+	        },
+	        confirm: {
+	            label: 'Delete Semester',
+	            className: 'btn-danger'
+	        }
+	    },
+	    callback: function (yesDelete) {
+	    	if (yesDelete) {
+	  	        /* Alert, Remove, and Display */
+	  	        var deletedIndex = getSemesterIndex();
+	  	        SUBJECTPICKED_PLZRM = 'NONE';
+	  	       	showAlert('alert-danger', 'You Have Deleted A Semester. '+TERMS[SEMESTERS[deletedIndex].term]+' '+SEMESTERS[deletedIndex].year);
+			    remSemesters(deletedIndex, 1); // Remove at index = semesterNum
+			    displayPlans();
+			}
+			return;
+	    }
+	});
+
     return;
 });
 
@@ -108,15 +130,56 @@ $(document).on('click', '#clearAllSemBtn', function(){
 	if (warnNoSem()) {
 		return;
 	}
-	if (!confirm('ARE YOU ABSOLUTELY SURE YOU WANT TO CLEAR ALL SEMESTERS?\nThis CANNOT be undone.')) {
-		return;
-	}
 
-	/* Remove All and Display */
-    remSemesters(0, SEMESTERS.length)
-    displayPlans();
+	bootbox.confirm({
+	    message: 'ARE YOU ABSOLUTELY SURE YOU WANT TO CLEAR ALL SEMESTERS?\nThis CANNOT be undone.',
+	    backdrop: true,
+	    buttons: {
+	        cancel: {
+	            label: 'Cancel',
+	            className: 'btn-default'
+	        },
+	        confirm: {
+	            label: 'Delete All Semesters',
+	            className: 'btn-danger'
+	        }
+	    },
+	    callback: function (yesDelete) {
+	    	if (yesDelete) {
+	  	        /* Alert, Remove All, and Display */
+	  	        SUBJECTPICKED_PLZRM = 'NONE';
+			    remSemesters(0, SEMESTERS.length);
+			    displayPlans();
+			    showAlert('alert-danger', 'You Have Deleted ALL Your Semesters.');
+
+			}
+			return;
+	    }
+	});
+
+	
     return;
 });
+
+
+function ableChevrons() {
+	if (!SEMESTERS.length || getSemesterIndex() == 0) {
+		$('#leftSemBTN').tooltip("hide");
+		$('#leftSemBTN').prop('disabled', true);
+	} else {
+		$('#leftSemBTN').prop('disabled', false);
+	}
+	if (getSemesterIndex() == SEMESTERS.length - 1) {
+		$('#rightSemBTN').tooltip("hide");
+		$('#rightSemBTN').prop('disabled', true);
+	} else {
+		$('#rightSemBTN').prop('disabled', false);
+	}
+	return;
+}
+
+
+
 
 //** View Buttons**************************//
 $(document).on('click', '#leftSemBTN', function(){
@@ -126,13 +189,14 @@ $(document).on('click', '#leftSemBTN', function(){
 		SEMESTERS[selected].show = false;
 	}
 	displayPlans();
-	if ($('#rightSemBTN').is(':disabled')) {
-		$('#rightSemBTN').prop('disabled', false);
-	}
-	if (getSemesterIndex() == 0) {
-		$('#leftSemBTN').tooltip("hide");
-		$('#leftSemBTN').prop('disabled', true);
-	}
+
+	// if ($('#rightSemBTN').is(':disabled')) {
+	// 	$('#rightSemBTN').prop('disabled', false);
+	// }
+	// if (getSemesterIndex() == 0) {
+	// 	$('#leftSemBTN').tooltip("hide");
+	// 	$('#leftSemBTN').prop('disabled', true);
+	// }
 	return;
 });
 
@@ -145,13 +209,13 @@ $(document).on('click', '#rightSemBTN', function(){
 
 	
 	displayPlans();
-	if ($('#leftSemBTN').is(':disabled')) {
-		$('#leftSemBTN').prop('disabled', false);
-	}
-	if (getSemesterIndex() == SEMESTERS.length - 1) {
-		$('#rightSemBTN').tooltip("hide");
-		$('#rightSemBTN').prop('disabled', true);
-	}
+	// if ($('#leftSemBTN').is(':disabled')) {
+	// 	$('#leftSemBTN').prop('disabled', false);
+	// }
+	// if (getSemesterIndex() == SEMESTERS.length - 1) {
+	// 	$('#rightSemBTN').tooltip("hide");
+	// 	$('#rightSemBTN').prop('disabled', true);
+	// }
 
 
 	// if (selected == 0) {
@@ -222,7 +286,7 @@ function getSortedIndex(year, term) {
 	return correctIndex;
 }
 
-function addGivenSemester(year, term) {
+function addGivenSemester(year, term) { // Used by transcript
 	/* Check for duplicates */
 	for (var i = 0; i < SEMESTERS.length; i++) {
 		if (SEMESTERS[i].year == year) {
@@ -237,7 +301,7 @@ function addGivenSemester(year, term) {
 	return getSortedIndex(year, term);
 }
 
-function addSelectedSemester() {
+function addSelectedSemester() { // Manual Select
 	var year = $("#selYear option:selected").text(); // selected value
 	var term = $("#selTerm").prop('selectedIndex') - 1;
 	
@@ -245,19 +309,22 @@ function addSelectedSemester() {
 	for (var i = 0; i < SEMESTERS.length; i++) {
 		if (SEMESTERS[i].year == year) {
 			if (SEMESTERS[i].term == term) {
-				alert("You Already Have This Semester.");
+				bootbox.alert({message: "You Already Have This Semester.", backdrop: true, size: 'small'});
 				return;
 			}
 		}
 	}
 	addSemesters(getSortedIndex(year, term), 0, new semConstruct(year, term));
 	displayPlans();
+	showAlert('alert-success', "You've Added A New Semester! "+TERMS[term]+' '+year);
+	var rate = 500;
+	$("#openOverviewButton").fadeIn(rate).fadeOut(rate).fadeIn(rate).fadeOut(rate).fadeIn(rate);
 	return;
 }
 
 
 
-function addSemesters(index, unknown, semester) { // dont know the 2nd arg does
+function addSemesters(index, unknown, semester) { // Actually puts it in the semester
 	SEMESTERS.splice(index, unknown, semester); // puts it in there
 	for (var i = 0; i < SEMESTERS.length; i++) {
 		SEMESTERS[i].show = false;
@@ -266,7 +333,7 @@ function addSemesters(index, unknown, semester) { // dont know the 2nd arg does
 	return;
 }
 
-function remSemesters(index, unknown) { // UNTESTED for removing 1 sem
+function remSemesters(index, unknown) {
 	SEMESTERS.splice(index, unknown);
 	for (var i = 0; i < SEMESTERS.length; i++) {
 		SEMESTERS[i].show = false;
@@ -281,7 +348,7 @@ function remSemesters(index, unknown) { // UNTESTED for removing 1 sem
 
 function warnNoSem() {
 	if (getSemesterIndex() == -1) { // no sems
-		alert("Try adding a semester first!");
+		bootbox.alert({message: "Try adding a semester first!", backdrop: true, size: 'small'});
 		return true;
 	}
 	return false;
