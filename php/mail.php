@@ -1,4 +1,6 @@
 <?php
+	echo mail('contact@courseplanner.comli.com', 'segseys', 'sgsrhsrhsr');
+	return;
 	$ua = getBrowser();
 	$yourbrowser = "Your browser: " . $ua['name'] . " " . $ua['version'] . " on " .$ua['platform'] . " reports: <br >" . $ua['userAgent'];
 
@@ -11,12 +13,13 @@
 	/* Determine who is involved in the email */
 	$email = 'nismail@mail.uoguelph.ca'; // Default email to both (or can send twice).
 	if ($whoTo == 1) {
-		$email = 'nismail@mail.uoguelph.ca'; // Devons email
+		$email = 'Fazekasd@mail.uoguelph.ca'; // Devons email
 	} else if ($whoTo == 2) {
 		$email = 'nismail@mail.uoguelph.ca'; // Nawars email
 	}
+
 	if ($userEmail == '') {
-		$userEmail = 'nismail@mail.uoguelph.ca (default)'; // Default user email
+		$userEmail = 'nawar10@sympatico.ca'; // Default user email
 	}
 
 
@@ -44,7 +47,7 @@
 	}
 
 	/* Sends the mail and outputs the "Thank you" string if the mail is successfully sent, or the error string otherwise. */
-	elseif (mail($email,$subject, $finalMessage,  implode("\r\n", $headers))) {
+	elseif (mail($email, $subject, $finalMessage,  implode("\r\n", $headers))) {
 	  echo "<h4>Thank you for your time, your email has been sent! Your feedback is appreciated!</h4>";
 	} else {
 	  echo "<h4>Can't send email. Sorry for any inconvience.</h4>";
