@@ -5,25 +5,19 @@ $(document).on('click', '#addCourseBtn', function(){ // I think this was removed
 		return;
 	}
 	$('#addCourseScreen').modal('show');
-	return;
 });
 
-
-// submitCourseClose()
+// submitCourseClose() // submitSelectedCourse no longer returns a value, I believe these 2 functions are residual.
 $(document).on('click', '#submitCourseClose', function(){
 	if (submitSelectedCourse()) {
-		$('#addCourseScreen').modal('hide'); // This this was removed
+		$('#addCourseScreen').modal('hide'); // This was removed
 	}
-	return;
 });
 
 // submitCourseOpen()
 $(document).on('click', '#submitCourseOpen', function(){
 	submitSelectedCourse();
-	return;
 });
-
-
 
 
 
@@ -36,9 +30,7 @@ $(document).on('click', '.remCourseBTN', function(){
 	/* Remove and Display */
     SEMESTERS[getSemesterIndex()].courses.splice(courseNum, 1); // Remove at index = semesterNum
     displayPlans();
-    return;
 });
-
 
 //** Course Click **********************************//
 // onCourseClick()
@@ -52,75 +44,154 @@ $(document).on('click', '.courseClick', function() {
 		}
 	}
 	if (DBindex == -1) {
-		alert("Could not find this course, sorry.");
+		bootbox.alert({message: "Could not find this course, sorry.", backdrop: true, size: 'small'});
 		return;
 	}
+	// tutorialStep(4, false);
+
+	/* Unclick */
 	for (var i = 0; i < VIEWING.length; i++) {
 		if (VIEWING[i].entry.accr == courseCode) {
 			VIEWING.splice(i, 1);
-			//alert("You are already viewing this course.");
-			// $('.TEMP').click(); // Goto 2nd panel
+			showAlert('alert-danger', "You've Removed A Card From The Viewing Panel. "+courseCode);
+			// $('.TEMP').click(); // Go to 2nd panel
 			displayPlans();
 			return;
 		}
-
 	}
 
 	/* Select 2nd tab */
 	// $('.TEMP').click();
+
 	VIEWING.push(new viewingContruct(DATABASE[DBindex]));
 	displayPlans();
-	return;
+	showAlert('alert-success', 'You Added A Card To The Viewing Panel. '+courseCode);
 });
-
-
-
 
 
 
 
 $(document).on('click', '.addSemCourseBTN', function(){
-	var courseCode = this.value
+	var courseCode = this.value;
 	submitSelectedCourse(courseCode);
 });
 
-// returns if course addition was successful
+// NO LONGER returns if course addition was successful
 function submitSelectedCourse() {
+	console.log('no para');
 	var selectedCourse = $("#courseByAccr option:selected").text();
 	var courseContent = getCourseContent(selectedCourse); // array
 	if (courseContent === undefined) {
-		alert("Course Not Found, Sorry.");
+		bootbox.alert({message: "Course Not Found, Sorry.", backdrop: true, size: 'small'});
 		return false;
 	}
 
+	// if no error, add. If error prompt, if confirm add
 	var errorMsg = verifyCourse(courseContent);
-	if (errorMsg === undefined || confirm(errorMsg + '\nWould you like to take this anyway?')) { // No error
+	if (errorMsg === undefined) {
 		SEMESTERS[getSemesterIndex()].courses.push(new courseConstruct(selectedCourse, courseContent));
 		displayPlans();
-		return true;
-	} else {
-		// alert(errorMsg);
-		return false;
+	} else { // there is an error message
+		bootbox.confirm({
+		    message: errorMsg + '\nWould you like to take this anyway?',
+		    backdrop: true,
+		    buttons: {
+		        confirm: {
+		            label: 'Yes',
+		            className: 'btn-success'
+		        },
+		        cancel: {
+		            label: 'No',
+		            className: 'btn-danger'
+		        }
+		    },
+		    callback: function (yesAdd) {
+		    	if (yesAdd) {
+		  	        SEMESTERS[getSemesterIndex()].courses.push(new courseConstruct(selectedCourse, courseContent));
+					displayPlans();
+				}
+		    }
+		});
 	}
-	
 }
 
 function submitSelectedCourse(code) {
 	var selectedCourse = code;
 	var courseContent = getCourseContent(selectedCourse); // array
 	if (courseContent === undefined) {
-		alert("Course Not Found, Sorry.");
+		bootbox.alert({message: "Course Not Found, Sorry.", backdrop: true, size: 'small'});
+		return false;
+	}
+	// if no error, add. If error prompt, if confirm add
+	var errorMsg = verifyCourse(courseContent);
+	if (errorMsg === undefined) {
+		// tutorialStep(3, false);
+		SEMESTERS[getSemesterIndex()].courses.push(new courseConstruct(selectedCourse, courseContent));
+		displayPlans();
+	} else { // there is an error message
+		bootbox.confirm({
+		    message: errorMsg + '\nWould you like to take this anyway?',
+		    backdrop: true,
+		    buttons: {
+		        confirm: {
+		            label: 'Yes',
+		            className: 'btn-success'
+		        },
+		        cancel: {
+		            label: 'No',
+		            className: 'btn-danger'
+		        }
+		    },
+		    callback: function (yesAdd) {
+		    	if (yesAdd) {
+		    		// tutorialStep(3, false);
+		  	        SEMESTERS[getSemesterIndex()].courses.push(new courseConstruct(selectedCourse, courseContent));
+					displayPlans();
+				}
+		    }
+		});
+	}
+	
+}
+
+function submitSelectedCourseViewing(code, toRemoveViewingIndex) {
+	console.log('ToRemove');
+	var selectedCourse = code;
+	var courseContent = getCourseContent(selectedCourse); // array
+	if (courseContent === undefined) {
+		bootbox.alert({message: "Course Not Found, Sorry.", backdrop: true, size: 'small'});
 		return false;
 	}
 
+	// if no error, add. If error prompt, if confirm add
 	var errorMsg = verifyCourse(courseContent);
-	if (errorMsg === undefined || confirm(errorMsg + '\nWould you like to take this anyway?')) { // if first is true, doesnt eval second
+	if (errorMsg === undefined) { // can add
 		SEMESTERS[getSemesterIndex()].courses.push(new courseConstruct(selectedCourse, courseContent));
+		/* Remove Viewing Course */
+		VIEWING.splice(toRemoveViewingIndex, 1);
 		displayPlans();
-		return true;
-	} else {
-		// alert(errorMsg);
-		return false;
+	} else { // there is an error message
+		bootbox.confirm({
+		    message: errorMsg + '\nWould you like to take this anyway?',
+		    backdrop: true,
+		    buttons: {
+		        confirm: {
+		            label: 'Yes',
+		            className: 'btn-success'
+		        },
+		        cancel: {
+		            label: 'No',
+		            className: 'btn-danger'
+		        }
+		    },
+		    callback: function (yesAdd) {
+		    	if (yesAdd) {
+		  	        SEMESTERS[getSemesterIndex()].courses.push(new courseConstruct(selectedCourse, courseContent));
+		  	        VIEWING.splice(toRemoveViewingIndex, 1);
+					displayPlans();
+				}
+		    }
+		});
 	}
 	
 }
