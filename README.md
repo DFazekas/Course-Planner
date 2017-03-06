@@ -4,7 +4,7 @@ Course-Planner is a web-based, desktop-first application, designed to simplify t
 ##**Information**
 - Database: MySQL
 - Server: [...]
-- Domain name: [...]
+- Domain name: http://planmysemesters.com/planner.php
 - Company name: [...]
 
 ##**Getting started**
