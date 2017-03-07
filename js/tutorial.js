@@ -1,3 +1,4 @@
+/* Copyright (c) 2017 Nawar Ismail */
 /* Alot of this was removed because an interactive tutorial was deemed unhelpful */
 $(document).on('click', '#startTutorial', function() {
 	runTutorial();
@@ -12,9 +13,8 @@ $(document).on('click', '.TEMP', function() {
 
 
 function runTutorial() {
-	var numSteps = 2;
+	var numSteps = 2; numSteps--; // Account for 0
 	$('.modal').modal('hide');
-	numSteps--; // Account for 0
 	
 	setTimeout(function(){recusTutorial(0)}, 400);
 	
@@ -24,16 +24,13 @@ function runTutorial() {
 		} else {
 			var string = getStepString(step);
 			bootbox.alert({closeButton: false, message: string, backdrop: true, size: 'large', callback: function() {
-				setTimeout(function(){ // Must delay next modal. Otherwise, interference
+				setTimeout(function(){ // Must delay next modal. Otherwise, interference (stops scrolling)
 					recusTutorial(++step);
 					// animateProgressBar(step);
 				}, 600);
 			}}).on("shown.bs.modal", function(e) {
 				$(this).scrollTop(0);
 			});
-			// , function(e) {
-			// 	animateProgressBar(step);
-			// });
 		}
 	}
 }
@@ -45,7 +42,6 @@ function tutorialStep(step, overrideCheck) { // doing the same step might break 
 			return;
 		}
 	}
-	// http://stackoverflow.com/questions/10007212/twitter-bootstrap-progress-bar-animation-on-page-load
 	switch (step) {
 		case 0:
 			string = getStepString(step);
@@ -70,14 +66,14 @@ function tutorialStep(step, overrideCheck) { // doing the same step might break 
 		case 5:
 			string = getStepString(step);
 			bootbox.alert({message: string, backdrop: true, size: 'large', callback: 
-						function () {
-							step++;
-						    string = getStepString(step);
-							bootbox.alert({message: string, backdrop: true, size: 'large'});
-							animateProgressBar(step);
-							TUTORIAL = 0;
-						}
-					});
+				function () {
+					step++;
+				    string = getStepString(step);
+					bootbox.alert({message: string, backdrop: true, size: 'large'});
+					animateProgressBar(step);
+					TUTORIAL = 0;
+				}
+			});
 			break;
 			default:
 				return; // Dont increment TUTORIAL	
@@ -89,6 +85,7 @@ function tutorialStep(step, overrideCheck) { // doing the same step might break 
 	return;
 }
 
+	// http://stackoverflow.com/questions/10007212/twitter-bootstrap-progress-bar-animation-on-page-load
 function animateProgressBar(step) {
 	var numSteps = 6.0
 	var me = $('.tutorialProgress');
