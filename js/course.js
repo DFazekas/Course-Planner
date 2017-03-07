@@ -5,19 +5,25 @@ $(document).on('click', '#addCourseBtn', function(){ // I think this was removed
 		return;
 	}
 	$('#addCourseScreen').modal('show');
+	return;
 });
 
-// submitCourseClose() // submitSelectedCourse no longer returns a value, I believe these 2 functions are residual.
+
+// submitCourseClose() // submitSelectedCourse no longer returns a value, I believe these 2 funcs are residual.
 $(document).on('click', '#submitCourseClose', function(){
 	if (submitSelectedCourse()) {
-		$('#addCourseScreen').modal('hide'); // This was removed
+		$('#addCourseScreen').modal('hide'); // This this was removed
 	}
+	return;
 });
 
 // submitCourseOpen()
 $(document).on('click', '#submitCourseOpen', function(){
 	submitSelectedCourse();
+	return;
 });
+
+
 
 
 
@@ -30,6 +36,7 @@ $(document).on('click', '.remCourseBTN', function(){
 	/* Remove and Display */
     SEMESTERS[getSemesterIndex()].courses.splice(courseNum, 1); // Remove at index = semesterNum
     displayPlans();
+    return;
 });
 
 //** Course Click **********************************//
@@ -53,11 +60,12 @@ $(document).on('click', '.courseClick', function() {
 	for (var i = 0; i < VIEWING.length; i++) {
 		if (VIEWING[i].entry.accr == courseCode) {
 			VIEWING.splice(i, 1);
-			showAlert('alert-danger', "You've Removed A Card From The Viewing Panel. "+courseCode);
-			// $('.TEMP').click(); // Go to 2nd panel
+			showAlert('alert-danger', "You've Removed A Card From The Course Cards Panel. "+courseCode);
+			// $('.TEMP').click(); // Goto 2nd panel
 			displayPlans();
 			return;
 		}
+
 	}
 
 	/* Select 2nd tab */
@@ -65,8 +73,12 @@ $(document).on('click', '.courseClick', function() {
 
 	VIEWING.push(new viewingContruct(DATABASE[DBindex]));
 	displayPlans();
-	showAlert('alert-success', 'You Added A Card To The Viewing Panel. '+courseCode);
+	showAlert('alert-success', 'You Added A Card To The Course Cards Panel. '+courseCode);
+	return;
 });
+
+
+
 
 
 
@@ -74,11 +86,11 @@ $(document).on('click', '.courseClick', function() {
 $(document).on('click', '.addSemCourseBTN', function(){
 	var courseCode = this.value;
 	submitSelectedCourse(courseCode);
+	return;
 });
 
 // NO LONGER returns if course addition was successful
 function submitSelectedCourse() {
-	console.log('no para');
 	var selectedCourse = $("#courseByAccr option:selected").text();
 	var courseContent = getCourseContent(selectedCourse); // array
 	if (courseContent === undefined) {
@@ -110,6 +122,7 @@ function submitSelectedCourse() {
 		  	        SEMESTERS[getSemesterIndex()].courses.push(new courseConstruct(selectedCourse, courseContent));
 					displayPlans();
 				}
+				return;
 		    }
 		});
 	}
@@ -148,6 +161,7 @@ function submitSelectedCourse(code) {
 		  	        SEMESTERS[getSemesterIndex()].courses.push(new courseConstruct(selectedCourse, courseContent));
 					displayPlans();
 				}
+				return;
 		    }
 		});
 	}
@@ -190,6 +204,7 @@ function submitSelectedCourseViewing(code, toRemoveViewingIndex) {
 		  	        VIEWING.splice(toRemoveViewingIndex, 1);
 					displayPlans();
 				}
+				return;
 		    }
 		});
 	}
