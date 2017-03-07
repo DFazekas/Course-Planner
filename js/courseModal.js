@@ -124,6 +124,6 @@ function getDropDownValues(id) {
 }
 
 
-$(document).on('click', '#leftPanelNameCodeButton', function(){
+$(document).on('change', '#leftPanelNameCodeButton', function() {
 	displayPlans();
 });
