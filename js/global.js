@@ -1,26 +1,33 @@
-// I BELEIVE the last element in semesters is empty
+/* Copyright (c) 2017 Nawar Ismail */
 //** Globals ******************************//
 const SUBJECT_NAME = '#subjectByName';
 const SUBJECT_CODE = '#subjectByCode';
 const COURSE_NAME  = '#courseByName';
 const COURSE_CODE  = '#courseByAccr';
 const ANIMATION_SPEED = 600;
+
+var SUBJECTPICKED_PLZRM = 'NONE'; // Integrated, don't remove
+
 var ELECTIVES = [];
 var SEMESTERS = [];
 // Used as: Semesters[SemesterNumber].{year/term/...}
 //          Semesters[SemesterNumber].courses[CourseNumber].{courseCode/details/...}
+// var TUTORIAL = false;
 var DATABASE = [];
 var SUBJECTS = [];
 var VIEWING = []; // Courses in right panel being viewed.
-var TERMS = ['W', 'S', 'F'];
-var DETAILS = ['subject', 'accr', 'course', 'term',
+const TERMS = ['W', 'S', 'F'];
+const DETAILS = ['subject', 'accr', 'course', 'term',
 				'hours', 'credits', 'offerings', 'prereqs',
 				'coreqs', 'equates', 'restrictions', 'externalinfo',
 				'departments', 'description'];
+
 //** Constructors ******************************//
 function viewingContruct(databaseEntry) {
 	this.entry = databaseEntry;
+	this.flagged = false;
 	this.generalView = true;
+	return;
 }
 
 function subjectsConstruct(subject, accr) {
@@ -61,14 +68,9 @@ function getCode(name) {
 	return undefined;
 }
 
-
-
-
-
-
 Array.prototype.move = function (old_index, new_index) {
     if (new_index >= this.length) {
-    	alert('we have a problem here');
+    	bootbox.alert({message: "Oops, something went wrong, when we tried to move things around", backdrop: true, size: 'small'});
         var k = new_index - this.length;
         while ((k--) + 1) {
             this.push(undefined);
@@ -82,7 +84,6 @@ String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
 };
-
 
 String.prototype.properCase = function() {
     return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
