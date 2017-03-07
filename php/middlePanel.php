@@ -184,7 +184,7 @@
 <style>
 	#middlePanel, #filterTab, #topPanel{
 		background-color: white;
-		border: 1px red solid;
+		border-left: 1px gray solid;
 		width: 100%;
 		height: auto;
 	}
