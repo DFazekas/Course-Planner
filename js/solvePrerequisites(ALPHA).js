@@ -1,3 +1,6 @@
+/* Copyright (c) 2017 Devon Fazekas-Thomas */
+/* Computes all possible ways of satisfying a course's prerequisite - ALPHA set. */
+
 function main (string) {
 /* FUNCTION LEGEND
  * 1. genCombinations():            main function for computing combinations (returns string).
