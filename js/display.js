@@ -1,8 +1,7 @@
+/* Copyright (c) 2017 Nawar Ismail */
 /********************************************************
  	Display Functions 
 ********************************************************/
-var SUBJECTPICKED_PLZRM = false;
-
 function displayPlans() {
 	if (SEMESTERS.length > 0) { // Set add sem to last semester
 		var termIndex = +SEMESTERS[SEMESTERS.length - 1].term + 1;
@@ -21,18 +20,32 @@ $(document).on('click', '.codeLabelName', function() {
 	} else {
 		$('#leftPanelNameCodeButton').prop('checked', false);
 	}
+	displayPlans();
 	return;
 });
 
 
 $(document).on('click', 'body', function(event) { // Better way? (jquery=async -> shouldnt hit performance)
+	var disableFirstTime = true;
 	// Show all tool tips if button clicked
 	if (event.target.id == 'allToolTips') {
 		$('[title]').each(function() {
 	        $this = $(this);
 	        if ($this.attr('data-toggle') == 'tooltip') {
+
 	        	$this.tooltip('enable');
 	        	$this.tooltip('show');
+	        	
+	        	// Initialize, should remove to seperate init func for efficiency
+	        	if ($this.attr('works') == undefined) {
+	        		$this.attr('works', disableFirstTime);
+	        	}
+	        	if ($this.attr('works') == 'false') {
+	        		showAlert('alert-success', 'This Has Enabled All ToolTips.');
+	        	}
+        		$this.tooltip('enable');
+        		$this.attr('works', true);
+
 	        }
 	    });
 	} else {
@@ -47,32 +60,22 @@ $(document).on('click', 'body', function(event) { // Better way? (jquery=async -
    	return;
 });
 
-
-// $(document).on('click', '#allToolTips', function() {
-// 	$('[title]').each(function() {
-//         $this = $(this);
-//         if ($this.attr('data-toggle') == 'tooltip') {
-//         	$this.tooltip('show');
-//         }
-//     });
-//     return;
-// });
-
 $(document).on('click', '#toggleToolTips', function(){
 	var disableFirstTime = true;
 	$('[title]').each(function() {
         $this = $(this);
         if ($this.attr('data-toggle') == 'tooltip') {
-        	// Initialize
+        	// Initialize, should remove to seperate init func for efficiency
         	if ($this.attr('works') == undefined) {
         		$this.attr('works', disableFirstTime);
-        		
         	}
 
         	if ($this.attr('works') == 'true') {
+        		showAlert('alert-danger', 'You Have Disabled ToolTips');
         		$this.tooltip('disable');
         		$this.attr('works', false);
         	} else {
+        		showAlert('alert-success', 'You Have Enabled ToolTips');
         		$this.tooltip('enable');
         		$this.attr('works', true);
         	}
@@ -81,78 +84,171 @@ $(document).on('click', '#toggleToolTips', function(){
 	return;
 });
 
-function drawSemestersA() { // add scoping fixes
+$(document).on('click', '#toggleAlerts', function(){
+	if (this.value == 0 || this.value == 'false') {
+     	this.value = true; // Don't disable before message sent
+		showAlert('alert-success', 'You Have Enabled Messages');
+	} else {	
+		showAlert('alert-danger', 'You Have Disabled Messages');
+		this.value = false; // Disable
+	}
+	return;
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*****************************************************************
+******************************************************************
+******************************************************************
+******************************************************************
+******************************************************************
+*/
+function drawSemesterNavigation() {
 	/* Display Year and Term */
-	$('#currentSem').html('<span class="glyphicon glyphicon-search" aria-hidden="true"></span>');
-	for (var i = 0; i < SEMESTERS.length; i++) {
-		if (SEMESTERS[i].show == true) {
-			$('#currentSem').html(SEMESTERS[i].year + ' ' + TERMS[SEMESTERS[i].term]);
-			break;
-		}
-	}
-
-	/* Left Panel Courses */
-	//string = 'Accronyms<input style="margin:0 auto;display:relative" type="checkbox" checked data-toggle="toggle">Name';
-	string = '';
-	if (getSemesterIndex() != -1) { // Not sure if I need this 'if'
-		for (var i = 0; i < SEMESTERS[getSemesterIndex()].courses.length; i++) {
-			string += ''+
-					'<table style="width:100%;"><tr>'+
-						'<td style="width:30px;"><button type="button" class="btn btn-danger remCourseBTN" style="border-top-right-radius:0;border-bottom-right-radius:0;" value="'+ i +'"><span class="glyphicon glyphicon-minus"></button></td>'+
-						'<td><button type="button" section="upper" class="btn btn-default courseClick" value="';
-			if ($("#leftPanelNameCodeButton").is(':checked')) {
-				string += SEMESTERS[getSemesterIndex()].courses[i].courseCode + '" style="width:100%;border-top-left-radius:0;border-bottom-left-radius:0;">'+
-							SEMESTERS[getSemesterIndex()].courses[i].courseCode;
-			} else {
-				string += SEMESTERS[getSemesterIndex()].courses[i].courseCode + '" style="width:100%;border-top-left-radius:0;border-bottom-left-radius:0;">'+
-							SEMESTERS[getSemesterIndex()].courses[i].details['course'];
+	var len = SEMESTERS.length;
+	$('#currentSem').html('Active Sem');
+	if (len != 0) {
+		for (var i = 0; i < len; i++) {
+			if (SEMESTERS[i].show == true) {
+				$('#currentSem').html(SEMESTERS[i].year + ' ' + TERMS[SEMESTERS[i].term]);
+				return;
 			}
-			
-			string += '</button></td>'+
-					'</tr></table>';
 		}
-
 	}
+	return;
+}
 
+function drawUserCourses() {
+	/* Draw the Courses */
+	var string = '';
+	var semesterIndex = getSemesterIndex(); 
+	if (semesterIndex === -1) { // no semester
+		$('#leftUserSemesterCourses').html(''); // clear
+		return;
+	}
+	var courses = SEMESTERS[semesterIndex].courses;
+	var len = courses.length;
+	for (var i = 0; i < len; i++) {
+		string += ''+
+				'<table style="width:100%;"><tr>'+
+					'<td style="width:30px;"><button type="button" class="btn btn-danger remCourseBTN" style="border-top-right-radius:0;border-bottom-right-radius:0;" value="'+ i +'"><span class="glyphicon glyphicon-minus"></button></td>'+
+					'<td><button type="button" section="upper" class="btn btn-default courseClick" value="';
+		if ($("#leftPanelNameCodeButton").is(':checked')) {
+			string += courses[i].courseCode + '" style="width:100%;border-top-left-radius:0;border-bottom-left-radius:0;">'+
+						courses[i].courseCode;
+		} else {
+			string += courses[i].courseCode + '" style="width:100%;border-top-left-radius:0;border-bottom-left-radius:0;">'+
+						courses[i].details['course'];
+		}
+		string += '</button></td>'+
+				'</tr></table>';
+	}
+	$('#leftUserSemesterCourses').html(string);
+}
 
-	/* Left Panel Subject Courses */
-	subjectCoursesName = [];
-	subjectCoursesCode = [];
+function getLeftPanelCourses() {
+	var subjectCoursesName = [];
+	var subjectCoursesCode = [];
 	for (var i = 0; i < DATABASE.length; i++) {
 		if (DATABASE[i].subject == SUBJECTPICKED_PLZRM) {
 			subjectCoursesCode.push(DATABASE[i].accr);
 			subjectCoursesName.push(DATABASE[i].course);
 		}
 	}
+	return [subjectCoursesName, subjectCoursesCode];
+}
 
-	// Availability
+function drawSubjectCourses(subjectCoursesName, subjectCoursesCode) {
+	var string = '';
+	var hideUnavailble = $('#fpHideUnavailable').prop('checked');
+
+	/* Selected Credits */
+	var selectedCredits = [];
+	$('.fpCredits:checkbox:checked').each(function() {
+       selectedCredits.push($(this).val());
+     });
+
+	/* Selected Terms */
+	var selectedTerms = [];
+	$('.fpTerms:checkbox:checked').each(function() {
+       selectedTerms.push($(this).val());
+     });
+
+	/* Availability (Based on verifyCourse) */
 	var available = [];
-	for (var i = 0; i < subjectCoursesCode.length; i++) {
+	for (var i = 0; i < subjectCoursesCode.length; i++) { // should be if'ed base on filters applied
 		var selectedCourse = subjectCoursesCode[i];
 		var courseContent = getCourseContent(selectedCourse); // array
+
+		var credit = courseContent[5].replace(/[\[\]']+/g,''); // Remove []; // credits
+		var terms = courseContent[3];
+
 		if (courseContent === undefined) {
 			console.log("Could not find " + selectedCourse + ".");
 			continue;
 		}
-		if (verifyCourse(courseContent) === undefined) { // Can Take
-		    available.push(selectedCourse);
-		}
-	}
-	
-	/* Subject Courses */
-	string += '<hr><div>';
-	for (var i = 0; (i < subjectCoursesName.length) && SUBJECTPICKED_PLZRM; i++) {
-		if ($('#fpHideUnavailable').prop('checked')) {
-			if ($.inArray(subjectCoursesCode[i], available) === -1) { // Not availble
-				continue;
+
+		var valid = false;
+		/* Terms */ // Order matters
+		if (findString(terms, 'P')) {
+			valid = true;
+		} else {
+			for (var j = 0; j < selectedTerms.length; j++) { // Go through every selected term
+				if (findString(terms, selectedTerms[j])) {
+					valid = true;
+					break;
+				}
+				// if (selectedTerms[j] 						 // Check if you find the selected term in the course term.
 			}
 		}
 
+		/* Credits */
+		if ($.inArray(credit, selectedCredits) === -1) { // Cant take
+			valid = false;
+		}
+
+		/* Hide Unavailable */
+		if (hideUnavailble) {
+			if (verifyCourse(courseContent) !== undefined) { // Cant Take
+			    valid = false;
+			}
+		}
+		if (valid) {
+			available.push(selectedCourse); // good
+		}
+	}
+	
+	/* Add Subject Courses */
+	string += '<hr><div>';
+	var showCode = $("#leftPanelNameCodeButton").is(':checked');
+	for (var i = 0; (i < subjectCoursesName.length) && (SUBJECTPICKED_PLZRM !== 'NONE'); i++) {
+		/* Check if unavailble courses should be hidden */
+		// if (hideUnavailble) {
+			if ($.inArray(subjectCoursesCode[i], available) === -1) { // If not in array => Not availble
+				continue;
+			}
+		// }
+
 		string += ''+
-				'<table style="width:100%;"><tr>'+ // opacity:0.2;
+				'<table style="width:100%;"><tr>'+
 					'<td style="width:30px;"><button type="button" class="btn btn-success addSemCourseBTN" style="border-top-right-radius:0;border-bottom-right-radius:0;" value="'+ subjectCoursesCode[i] +'"><span class="glyphicon glyphicon-plus"></button></td>'+
 					'<td><button type="button" section="lower" class="btn btn-primary courseClick" value="';
-		if ($("#leftPanelNameCodeButton").is(':checked')) {
+		if (showCode) {
 			string += subjectCoursesCode[i] + '" style="width:100%;border-top-left-radius:0;border-bottom-left-radius:0;">'+
 						subjectCoursesCode[i];
 		} else {
@@ -163,8 +259,17 @@ function drawSemestersA() { // add scoping fixes
 		string += '</button></td>'+
 				'</tr></table>';
 	}
-	$('#semesterCourses').html(string + '</div>');
 
+	if (SUBJECTPICKED_PLZRM !== 'NONE' && SEMESTERS.length > 0) {
+		string += '<br><button id="jumpToFilters" class="btn btn-warning" style="width:100%;">See Applied Filters</button>';
+		string += '<br><button id="courseColoring" class="btn btn-info" style="width:100%;">Explain Course Colors</button>';
+	}
+	document.getElementById("leftSubjectSemesterCourses").innerHTML = string + '</div>'; // ~1-5ms Speed improvement
+	// $('#leftSubjectSemesterCourses').html(string + '</div>');
+	return;
+}
+
+function colorLeftPanelCourses(subjectCoursesCode) {
 	// INDICATOR SCHEME FOR BUTTONS, to optimize dont do (most of) this if filters applied 
 	var coursesTaken = []; // Probably only need to find courses with subject in code (if faster)
 	for (var i = 0; i < SEMESTERS.length; i++) {
@@ -188,7 +293,7 @@ function drawSemestersA() { // add scoping fixes
 			continue;
 		} else if (verifyCourse(courseContent) !== undefined) { // Cant Take
 			$('.addSemCourseBTN[value="' + subjectCoursesCode[i] + '"]').css('opacity', 0.5);
-			$('.courseClick[value="' + subjectCoursesCode[i] + '"]').css('opacity', 0.85);
+			// $('.courseClick[value="' + subjectCoursesCode[i] + '"]').css('opacity', 0.85); // Removed to avoid confusion
 		}
 
 		// Taken
@@ -206,52 +311,116 @@ function drawSemestersA() { // add scoping fixes
 			$('.courseClick[value="' + viewingCourses[i] + '"]').css('opacity', 0.5);
 		}
 	}
-	if (VIEWING.length == 0) {
-		$('.secondPanelOption').prop('disabled', true);
-	} else {
-		$('.secondPanelOption').prop('disabled', false);
-	}
+	return;
+}
 
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-	/* Overview */
-	string = '<table><tr><td>Semesters |</td><td> Courses</td></tr>';
-	for (var i = 0; i < SEMESTERS.length; i++) {
-		string += '<tr><td>'+ 
-				'<input type="radio" class="overview_sem" name="semester" value="' + i + '"></input>' + 
-				'(' + (i+1) + ') ' + SEMESTERS[i].year + ' ' + TERMS[SEMESTERS[i].term] +'</td><td></td></tr>';
-		for (var j = 0; j < SEMESTERS[i].courses.length; j++) {
-					string += '<tr><td></td><td>'+
-					'<input type="checkbox" class="overview_course" name="course" value="'+i+' '+j+'"></input>' +
-					'('+ (j+1) + ') ' + SEMESTERS[i].courses[j].courseCode +'</td></tr>';
-		}
-	}
-	string += '</table>';
-	$('#overviewContent').html(string);
-	for (var i = 0; i < SEMESTERS.length; i++) {
+function drawOverview() { // Draw Table
+	$('#overviewContent').html(maxLengthOverviewLayout());
+	/* Select the current semester */
+	var semLen = SEMESTERS.length;
+	for (var i = 0; i < semLen; i++) {
 		if (SEMESTERS[i].show) {
 			$('input[name=semester][value='+i+']').prop('checked', true);
 		}
 	}
 
+	/* One Printing Style */
+	function maxLengthOverviewLayout() {
+		var firstPageIndex = getLastSemesterInFirstColunm();
+		if (SEMESTERS.length == 0) {
+			return "<h4 style='text-align:center;'>Come back when you add some courses!</h4>";
+		}
+		var string = "<h5 style='text-align:center;'>Here are all the semesters and courses you've added!</h5><div class='w3-row'>";
+		string += '<table style="display: inline-block;width:50%;">';
+		for (var i = 0; i < firstPageIndex; i++) {
+			string += '<tr>' + drawOverviewSemester(i) + '</tr>';
+		}
+		string +='</div></table>';
 
-	/* Right Panel */
-	string = '';
+		string += '<table style="float: right;width:50%;">';
+		for (var i = firstPageIndex; i < SEMESTERS.length; i++) {
+			string += '<tr>' + drawOverviewSemester(i) + '</tr>';
+		}
+		string +='</div></table>';
+		string += "<br>Total Credits: " + countCredits('', 0000, false, 100) + "<br>Please note, if you've taken courses outside of Guelph, credits will be counted here. However, they won't count of your Guelph transcript.";
+
+
+		return string;
+		// No longer works for some reason.
+		// Must be colums, otherwise printing doesnt work, is there a work around for phone display? yes, min-width
+		string += '<table class="w3-container w3-col" style="width:50%;min-width:220px;"><tr><th>Semesters </th><th> Courses</th></tr>';
+		for (var i = 0; i < firstPageIndex; i++) {
+			string += '<tr>' + drawOverviewSemester(i) + '</tr>';
+		}
+		string +='</div></table>';
+
+		if (firstPageIndex >= SEMESTERS.length) {
+			return string; // Don't Draw second column
+		}
+
+		string += '<table class="w3-container w3-col" style="width:50%;min-width:220px;"><tr><th>Semesters </th><th> Courses</th></tr>';
+		for (var i = firstPageIndex; i < SEMESTERS.length; i++) {
+			string += '<tr>' + drawOverviewSemester(i) + '</tr>';
+		}
+		string += '</table></div>';
+		return string;
+	}
+
+	/* Another Printing Style */
+	function twoColumnOverviewLayout() {
+		var string = '<div class="w3-row">';
+		string += '<table class="w3-container w3-col" style="width:40%;"><tr><td>Semesters |</td><td> Courses</td></tr>';
+		for (var i = 0; i < SEMESTERS.length; i+=2) {
+			string += '<tr>' + drawOverviewSemester(i) + '</tr>';
+		}
+		string +='</table>'
+		string += '<table class="w3-container w3-col" style="width:40%;"><tr><td>Semesters |</td><td> Courses</td></tr>';
+		for (var i = 1; i < SEMESTERS.length; i+=2) {
+			string += '<tr>' + drawOverviewSemester(i) + '</tr>';
+		}
+		string += '</table></div>';
+		return string;
+	}
+
+	function drawOverviewSemester(i) {
+		var string = '<td colspan="2">'+ 
+				'<input type="radio" class="overview_sem" name="semester" value="' + i + '"></input>' + 
+				'(' + (i+1) + ') ' + SEMESTERS[i].year + ' ' + TERMS[SEMESTERS[i].term] + ' ' + countCredits('', 0000, false, i).toFixed(2) + ' Credits</td><td></td></tr>';
+		for (var j = 0; j < SEMESTERS[i].courses.length; j++) {
+					string += '<tr style="width:100%;"><td style="width:30%;"></td><td>'+
+					// '<input type="checkbox" class="overview_course" name="course" value="'+i+' '+j+'"></input>' +
+					'('+ (j+1) + ') ' + SEMESTERS[i].courses[j].courseCode +'</td></tr>';
+		}
+		return string;
+	}
+
+	/* Get the semester that exceeds the page ~MaxLines lines*/
+	function getLastSemesterInFirstColunm() {
+		var numLines = 0;
+		var maxLines = 40;
+		var semLen = SEMESTERS.length;
+		for (var i = 0; i < semLen; i++) {
+			var courseLen = SEMESTERS[i].courses.length;
+			numLines++;
+			for (var j = 0; j < courseLen; j++) {
+				numLines++;
+				if (numLines > maxLines) {
+					return i;
+				}
+			}
+		}
+		return SEMESTERS.length;
+	}
+	
+	return;
+}
+
+function drawCards() {
+	var string = "<div style='width:90%;margin-left:5%;text-align:center;'><h4>Come back after you've added some courses for viewing by clicking on it's title!</h4></div>";
 	var size = 170;
+	if (VIEWING.length != 0) {
+		string = '';
+	}
 	for (var i = 0; i < VIEWING.length; i++) {
 		if (VIEWING[i].generalView) {
 			string += getTableFront(size, VIEWING[i], i);
@@ -265,14 +434,83 @@ function drawSemestersA() { // add scoping fixes
 	$('.shiftUpCard[value=0]').prop('disabled', true);
 	$('.shiftDownCard[value=' + (VIEWING.length - 1) + ']').prop('disabled', true);
 
-
-
+	if (VIEWING.length == 0) {
+		$('.secondPanelOption').prop('disabled', true);
+	} else {
+		$('.secondPanelOption').prop('disabled', false);
+	}
 	return;
 }
 
-/*'offerings', 'prereqs',
-				'coreqs', 'equates', 'restrictions', 'externalinfo',
-				'departments'*/ 
+function colorCards() { // add the shift coloring here
+	var availibleViewCourses = [];
+	var len = VIEWING.length;
+	for (var i = 0; i < len; i++) {
+		var code = VIEWING[i].entry.accr;
+		var courseContent = getCourseContent(code); // array
+		if (courseContent === undefined) {
+			console.log("Could not find " + code + ".");
+			continue;
+		}
+		if (verifyCourse(courseContent) !== undefined) { // Cant take
+			$('.addCard[value="' + i + '"]').css('opacity', 0.5);
+			$('.moveCard[value="' + i + '"]').css('opacity', 0.5);
+		}
+	}
+	return;
+}
+
+function drawSemestersA() { // If speed becomes an issue, checks should be done to see if regions need to update.
+	/* ~Tutorial */
+	if (SEMESTERS.length === 0) {
+		// SUBJECTPICKED_PLZRM = false;
+		$('#middlePanel').hide();
+		$('#middleNoSemesters').show();
+		$('#deleteSemesterRegion').hide(); // Hide delete options
+		$('#courseTitleViewingRegion').hide();
+	} else {
+		if ((SUBJECTPICKED_PLZRM !== 'NONE') || (SEMESTERS[getSemesterIndex()].courses.length > 0)) {
+			$('#courseTitleViewingRegion').show();
+		} else {
+			$('#courseTitleViewingRegion').hide();
+		}
+		$('#deleteSemesterRegion').show();
+		$('#middleNoSemesters').hide();
+		$('#middlePanel').show();
+	}
+
+	var leftPanelCourses = getLeftPanelCourses(); // subject courses*
+	/* Draw Left Panel */
+	drawSemesterNavigation();
+	drawUserCourses();
+	drawSubjectCourses(leftPanelCourses[0], leftPanelCourses[1]);
+	colorLeftPanelCourses(leftPanelCourses[1]);
+
+	/* Overview */
+	drawOverview();
+
+	/* Draw Middle Panel*/
+	drawCards();
+	colorCards();
+	
+	/* Disable Buttons */
+	ableChevrons();
+	ableAddSemester();
+	return;
+}
+
+
+
+
+
+/*****************************************************************
+******************************************************************
+******************************************************************
+******************************************************************
+******************************************************************
+*/
+
+
 function getTableBack(size, details, index) { // DO NOT DELETE THIS v COMMENT IT IS USED AS CODE
 	var backDetails = '';
 	backDetails += "<table style='width:95%;margin-left:2.5%;' border='0'>";
@@ -284,7 +522,6 @@ function getTableBack(size, details, index) { // DO NOT DELETE THIS v COMMENT IT
 		}
 	}
 	backDetails += '</table>';
-
 	var string = (function () {/*
    		<div style="margin-left:5%;margin-top:8px;width:90%;height:DIVHEIGHTpx;"> 
 		    <table border='1' style="boarder-width:5px;table-layout:fixed;width:100%;height:100%;padding:0;margin:0;background-color:rgba(66, 244, 161, 0.2);">
@@ -295,7 +532,7 @@ function getTableBack(size, details, index) { // DO NOT DELETE THIS v COMMENT IT
 							<span class="glyphicon glyphicon-chevron-left"></span>
 		        		</button>
 		        	</td>
-				    <td rowspan='2' style="width:7%">
+				    <td rowspan='2' style="width:7%;height:100%;">
 		                <button value='VALUE' style="height:33%;width:100%;padding:0;border-bottom-left-radius:0;
 		                                border-bottom-right-radius:0;" class="btn btn-success cardBtn addCard"
 		                                data-toggle="tooltip" data-placement="top" title="Add Card">
@@ -313,7 +550,7 @@ function getTableBack(size, details, index) { // DO NOT DELETE THIS v COMMENT IT
 		                </button>
 		            </td>
 
-		            <td style="width:82.5;padding:0;vertical-align:top;">
+		            <td class="cardBackground" value='VALUE' style="width:82.5;padding:0;vertical-align:top;background-color:COLOR">
 		                <div style="height:50px;">
 			                <h4 style="text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 			                            margin:0;">
@@ -358,12 +595,7 @@ function getTableBack(size, details, index) { // DO NOT DELETE THIS v COMMENT IT
 		    </table>
 		</div>
 	*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1].replace(/(\r\n|\n|\r)/gm,"");
-	// if (index == 0) {
-		// console.log(index);
-	// } 
-	// else if (index == VIEWING.length - 1) {
-		// $('.shiftDownCard[value=' + VIEWING.length - 1 + ']').prop('disabled', true);
-	// }
+
 	string = string.replaceAll('DIVHEIGHT', String(size));
 	string = string.replaceAll('ROWHEIGHT', String(size - 5));
 	string = string.replaceAll('CONTENTHEIGHT', String(size - 50 - 5));
@@ -376,6 +608,11 @@ function getTableBack(size, details, index) { // DO NOT DELETE THIS v COMMENT IT
 	string = string.replaceAll('TERMOFCOURSE', '[' + details.term + ']');
 	string = string.replaceAll('DESCRIPTIONOFCOURSE', details.description);
 	string = string.replaceAll('VALUE', index);
+	if (!VIEWING[index].flagged) {
+		string = string.replaceAll('COLOR', 'rgba(66, 244, 161, 0.2)'); // Normal Color
+	} else {
+		string = string.replaceAll('COLOR', 'rgba(255, 255, 0, 0.5)');
+	}
 	return string;
 }
 
@@ -390,7 +627,7 @@ function getTableFront(size, course, index) { // DO NOT DELETE THIS v COMMENT IT
 							<span class="glyphicon glyphicon-chevron-left"></span>
 		        		</button>
 		        	</td>
-				    <td rowspan='2' style="width:7%">
+				    <td rowspan='2' style="width:7%;height:100%;">
 		                <button value='VALUE' style="height:33%;width:100%;padding:0;border-bottom-left-radius:0;
 		                                border-bottom-right-radius:0;" class="btn btn-success cardBtn addCard"
 		                                data-toggle="tooltip" data-placement="top" title="Add Card">
@@ -407,7 +644,7 @@ function getTableFront(size, course, index) { // DO NOT DELETE THIS v COMMENT IT
 		                    <span class="glyphicon glyphicon-remove"></span>
 		                </button>
 		            </td>
-		            <td style="width:82.5%;padding:0;vertical-align:top;">
+		            <td class="cardBackground" value='VALUE' style="width:82.5%;padding:0;vertical-align:top;background-color:COLOR">
 		            	<div style="height:50px;">
 			                <h4 style="text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 			                            margin:0;">
@@ -461,6 +698,12 @@ function getTableFront(size, course, index) { // DO NOT DELETE THIS v COMMENT IT
 	string = string.replaceAll('HOURSOFCOURSE', course.entry.hours);
 	string = string.replaceAll('DESCRIPTIONOFCOURSE', course.entry.description);
 	string = string.replaceAll('VALUE', index);
+	if (!VIEWING[index].flagged) {
+		string = string.replaceAll('COLOR', 'rgba(66, 244, 161, 0.2)');
+		
+	} else {
+		string = string.replaceAll('COLOR', 'rgba(255, 255, 0, 0.5)');
+	}
 	return string;
 }
 
@@ -508,11 +751,7 @@ $(document).on('click', '.moveCard', function(){
 	var index = this.value;
 	/* Add */
 	var code = VIEWING[index].entry.accr;
-	if (submitSelectedCourse(code)) {
-		/* Remove */
-		VIEWING.splice(index, 1);
-		displayPlans();
-	}
+	submitSelectedCourseViewing(code, index);// will remove card if succesful
 	return;
 });
 
@@ -548,6 +787,12 @@ function courseDetailText(code) {
 	}
 }
 
+$(document).on('click', '.cardBackground', function() {
+	var index = $(this).attr('value');
+	VIEWING[index].flagged ^= true;
+	displayPlans();
+	return;
+});
 
 
 
@@ -559,12 +804,29 @@ function getDropDownValues(id) { // Not used
 	return values;
 }
 
-
 $(document).on('click', '.leftPanelSubjects', function(){
 	if (this.value == undefined) return;
+	if (this.value == 'CUSTOM') {
+		bootbox.prompt({
+			title: "Enter the Course Code of a Course You Couldn't Find. We'll add it for you!",
+			size: 'small',
+			backdrop: true,
+			callback: function(result) {
+				if (result != null) {
+					var courseCode = result;
+					SEMESTERS[getSemesterIndex()].courses.push(new courseConstruct('*'+courseCode+'*', [courseCode.split('*')[0], '*'+courseCode+'*', '*'+courseCode+'*', undefined]));
+				}
+				$('#pickSubjectScreen').modal('hide');
+				displayPlans();
+			}
+		});
+		return;
+	}
 	SUBJECTPICKED_PLZRM = this.value.replaceAll('_', ' ');
 	$('#pickSubjectScreen').modal('hide');
 	displayPlans();
+
+	// tutorialStep(2, false);
 	return;
 });
 
@@ -597,16 +859,33 @@ $(document).on('click', '.secondPanelOption', function() {
 			displayPlans();
 			break;
 		case 'filter':
-			alert('Filter Not Yet Supported');
+			bootbox.alert({message: 'Filter Not Yet Supported', backdrop: true, size: 'small'});
 			break;
 		case 'deleteAll':
-		    if (confirm('Are you sure you want to remove all cards? This cannot be undone.')) {
-		    	VIEWING.splice(0, VIEWING.length);
-		    	displayPlans();
-			}
+			bootbox.confirm({
+			    message: 'Are you sure you want to remove all cards? This cannot be undone.',
+			    backdrop: true,
+			    buttons: {
+			        confirm: {
+			            label: 'Remove All Cards',
+			            className: 'btn-danger'
+			        },
+			        cancel: {
+			            label: 'Cancel',
+			            className: 'btn-default'
+			        }
+			    },
+			    callback: function (yesDelete) {
+			        if (yesDelete) {
+				        VIEWING.splice(0, VIEWING.length);
+			    		displayPlans();
+		    		}
+		    		return;
+			    }
+			});
 		    break;
 		default:
-			alert('how did you click this?');
+			bootbox.alert({message: 'how did you click this?', backdrop: true, size: 'small'});
 			break;
 	}
 	return;
@@ -614,223 +893,45 @@ $(document).on('click', '.secondPanelOption', function() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function drawSemesters() {
+/* ADD SEMESTER DISABLING */
+$(document).on('change', '#selYear, #selTerm', function() {
+	ableAddSemester();
 	return;
-	var numSem = SEMESTERS.length;
+});
 
-	/* If No Semesters, Nothing to Display */
-	if (numSem < 1) {
-		$('#plan').html(headerHTML() + '<h4 style="text-align:center">Try Adding a Semester!</h4>');
-		return;
-	}
-
-	/* Create and Display HTML */
-	var html = headerHTML();
-	for (var i = 0; i < numSem; i++) {
-		html += semesterHeaderHTML(i);
-		html += coursesText(i);
-	}
-	html += footerHTML();
-	$('#plan').html(html);
+function ableAddSemester() {
+	var year = $("#selYear option:selected").text(); // selected value
+	var term = $("#selTerm").prop('selectedIndex') - 1;
 	
-	/* Display Folding Accordingly */
-	for (var i = 0; i < numSem; i++) {
-		if (!SEMESTERS[i].show) {
-			var targetId = 'coursesInfo_' + i;
-			$("#" + targetId).hide();
+	/* Check for duplicates */
+	for (var i = 0; i < SEMESTERS.length; i++) {
+		if (SEMESTERS[i].year == year) {
+			if (SEMESTERS[i].term == term) {
+				$('#addSemOpen').prop('disabled', true);
+				return;
+			}
 		}
-		// Default is show so no need for else
 	}
+	$('#addSemOpen').prop('disabled', false);
 	return;
-
-	function headerHTML() {
-		return  '<div class="w3-row-padding" style="padding-top:6px">' +  // 6px = 3px * 2
-					'<button class="btn btn-success w3-threequarter" id="addSemesterBtn" style="height:50px;">'+ // % no work
-						'<span class="glyphicon glyphicon-plus"></span> Add Semester'+
-					'</button>' + 
-
-					'<div class="dropdown w3-quarter">' +
-					  '<button class="btn btn btn-info dropdown-toggle" type="button"' + 
-					  	 'data-toggle="dropdown" style="height:50px;width:100%">Other' +
-					  '<span class="caret"></span></button>' +
-					  '<ul class="dropdown-menu" style="background-color:orange;color:white;">' +
-					    '<li>' + 
-					    	'<a id="expandAllSemesters" style="color:white;">&nbsp<br>Expand All<br>&nbsp</a>' + 
-					    '</li>' +
-					    '<li style="border-top-style:solid;border-bottom-style:solid;">' +
-					    	'<a id="collapseAllSemesters" style="color:white";>&nbsp<br>Collapse All<br>&nbsp</a></li>' +
-					    '<li>'+
-					    	'<a>' + 
-					    	
-								'<div class="fileinput fileinput-new" data-provides="fileinput">'+
-								'<span style="color:white;"><br>Upload Your Transcript!</span>'+
-							    	'<input type="file" id="fileInput" style="height:50px;color:transparent;"/>'+
-							    '</div>' + 
-				    		'</a>' +
-				    	'</li>' +
-					  '</ul>' +
-					'</div>' +
-				'</div>' + 
-				'<hr style="margin:5px;">'+
-				'';
-	}
-
-	function semesterHeaderHTML(i) {
-		return  '<div style="width:100%;"' + 
-					'<button style="width:90%;" class="btn btn-primary semesterToggle" id=' + "semesterToggle_" + i + '>' +
-						"(" + String(i) + ") " + String(TERMS_LETTER[SEMESTERS[i].term]) + String(SEMESTERS[i].year)[2] +  String(SEMESTERS[i].year)[3] + 
-						' ' + String(SEMESTERS[i].courses.length) +  ' Courses ' +
-					"</button>" +
-					'<button class="btn btn-danger removeSemesterBtn" id=' + "removeSemesterSemester_" + i + '>' + 
-						'<span class="glyphicon glyphicon-trash"></span>' + // Make it look nice here
-					"</button>" + 
-					'<button class="btn btn-success addCourseBtn" id=' + "addCourseSemester_" + i + '>' +
-						'<span class="glyphicon glyphicon-plus"></span>' + 
-					"</button>" +  
-				'</div>';
-	}
-
-	function footerHTML() {
-		return  '<button class="btn btn-danger" id="clearAllSemBtn" style="width:100%">'+
-					'<span class="glyphicon glyphicon-trash"></span> Clear All Semesters'+
-				'</button>';
-	}
-
-}
-
-function coursesText(semesterNum) {
-	var numCourses = SEMESTERS[semesterNum].courses.length;
-	html = '<div id=' + 'coursesInfo_' + semesterNum + '>';
-
-	for (var i = 0; i < numCourses; i++) {
-		var code = SEMESTERS[semesterNum].courses[i].courseCode;
-
-		html += courseHeaderHTML(semesterNum, code);
-		if (SEMESTERS[semesterNum].courses[i].show) {
-			html += courseDetailText(semesterNum, i);
-		}
-	}
-
-	html += '</div>';
-	return html;
-
-
-	function courseHeaderHTML(semesterNum, code) {
-		return '<div style="position:relative;left:5%;"' + "coursesSemester_" + semesterNum + '>' +
-					'<div style="width:90%;"' + 
-						'<button class="btn btn-info courseToggle" id='+ "toggleCourseSemester_" + 
-						 	+ semesterNum + "_" + i + '>'  + code + ' ' +
-						'</button>' + 
-						'<button class="btn btn-danger removeCourseBtn" id=' + "removeCourseSemester_" +
-						 	semesterNum + "_" + i + '>' + 
-							'<span class="glyphicon glyphicon-trash"></span>' + 
-						"</button>" + 
-					'</div>' + 
-				"</div>";
-	}
 }
 
 
 
 
-function courseDetailTextB(semNum, courseNum) {
-	var selectedDetail = SEMESTERS[semNum].courses[courseNum].detailShown;
-	var html = '<table id=' + "courseDetailTable_" + semNum + '_' + courseNum + 
-					' style="position:relative;left:8%;width:84%;">' +
-			   		'<tr>' + 
-					   	'<td style="width:10%;" align="right">' + 
-					   		 optionsHTML(semNum, courseNum) +
-					   	'<td style="border:solid;width:90%;text-align:center;font-size:150%;">' +  
-					   		SEMESTERS[semNum].courses[courseNum].details[selectedDetail] + 
-				   		'</td>' + 
-				   	'</tr>' + 
-			   	'</table>';
-	return html;
 
 
-	function optionsHTML(semNum, courseNum) {
-		return  '<div class="btn-group-vertical" role="group">' + 
-				  '<button class="btn btn-warning courseDetails"' +
-					  'id=' + "0_"+ semNum + '_' + courseNum + '>' + 
-					  'Overview' + 
-				  '</button>' + 
-				  '<button class="btn btn-warning courseDetails"' + 
-					  'id=' + "1_"+ semNum + '_' + courseNum + '>' + 
-					  'Details' + 
-				  '</button>' +
-				  '<button class="btn btn-warning courseDetails"' + 
-				  	   'id=' + "2_"+ semNum + '_' + courseNum + '>' + 
-					   'Interactions' + 
-				   '</button>' +  
 
-				   	'<div class="btn-group">' +
-					 '<button type="button" class="btn btn-warning dropdown-toggle"' +
-						 'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
-						 'Other &nbsp<span class="caret"></span>' +
-					 '</button>' +
-					  '<ul class="dropdown-menu">' +
-					    '<li>' +
-						    '<a class="btn btn-warning courseDetails"' +
-								'id=' + "3_"+ semNum + '_' + courseNum + '>' + 
-								'Prereqs' + 
-							'</a>' +
-						'</li>' +
-						'<li>' +
-						'<a class="btn btn-warning courseDetails"' + 
-							'id=' + "4_"+ semNum + '_' + courseNum + '>' + 
-							'Restrictions' + 
-						'</a>' +
-						'</li>' +
-						'<li>' +
-						'<a class="btn btn-warning courseDetails"' + 
-							'id=' + "5_"+ semNum + '_' + courseNum + '>' + 
-							'Offerings' + 
-						'</a>' +
-						'</li>' +
-						'<li>' +
-						'<a class="btn btn-warning courseDetails"' + 
-							'id=' + "6_"+ semNum + '_' + courseNum + '>' + 
-							'CoReqs' + 
-						'</a>' +
-						'</li>' +
-					  '</ul>' +
-					'</div>' +
-				'</div>' + 
-		   	'</td>';
-	}
-}
+
+
+
+
+
+
+
+
+
+
 
 
 
