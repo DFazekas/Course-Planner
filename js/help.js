@@ -75,7 +75,8 @@ function printSpecificHelp(helpNumber) {
 				<div style="text-align:center;">
 					<h2>Course Coloring</h2>
 					<img style="max-height:700px;max-width:600px;" src="images/coloring.png?lastMod=1"><br><br>
-					To make it easier, we recommend you keep the filter the hide unavailible courses selected.<br><br>
+					You can change filters in the by clicking 'Show/Hide Filters' in the Subjects and Filters tab.
+					To make it easier, we recommend you keep the filter the hide unavailable courses selected.<br><br>
 				</div>
 			*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1].replace(/(\r\n|\n|\r)/gm,"");
 			bootbox.alert({message: string, backdrop: true, size: 'large'}).on("shown.bs.modal", function(e) {
@@ -111,7 +112,7 @@ function printSpecificHelp(helpNumber) {
 			runTutorial();
 			
 			break;
-		case 10:
+		// Part of contact us (10, 8)
 		// No longer works due to server
 		// <form class="contactForm" action="php/mail.php" method="POST">
 		// 				<b>Subject</b><br>
@@ -131,6 +132,7 @@ function printSpecificHelp(helpNumber) {
 		// 			</form>
 		// 			<div id="mailResponse"></div>
 		// 		</div>
+		case 10:
 		case 8: // Contact us
 			string = (function () {/*
 				<div style="text-align:center;">
@@ -140,7 +142,7 @@ function printSpecificHelp(helpNumber) {
 					<a href="mailto:courseplannercontact@gmail.com?Subject=Inquiry" target="_blank">coursePlannerContact@gmail.com</a>
 					</h5>
 					<b>
-					And hey, why not check out our quick 5 question <a href="https://www.surveymonkey.com/r/6YCQYRX">Survey</a>?
+					And hey, why not check out our quick 5 question <a target="_blank" href="https://www.surveymonkey.com/r/6YCQYRX">Survey</a>?
 					Or for more information, check out our <a target="_blank" href="https://www.facebook.com/guelphcourseplanner/">Facebook Page</a>!
 					</b>
 					<br>
@@ -153,7 +155,7 @@ function printSpecificHelp(helpNumber) {
 					$('#mailResponse').html('');
 
 					var values = $(this).serializeArray();
-					$.ajax({ // add a cool down if you get spam
+					$.ajax({
 			            type:'POST',
 			            url: 'php/mail.php',
 			            data: {subject: values[0].value, userEmail: values[1].value, emailWho: values[2].value, message: values[3].value},
@@ -173,12 +175,9 @@ function printSpecificHelp(helpNumber) {
 			                return false;
 			            }
 			        });
-				 return false;
+				return false;
 				});
 			});
-
-			
-
 			break;
 		case 9: // Who are we
 			string = (function () {/*
@@ -196,7 +195,7 @@ function printSpecificHelp(helpNumber) {
 					<hr>
 					<div class="w3-row">
 						<div class="w3-container w3-half">
-							<b>Nawar Ismail</b> as Lead Developper<br>
+							<b>Nawar Ismail</b> as Lead Developer<br>
 						</div>
 						<div class="w3-container w3-half">
 							<b>Devon Fazekas-Thomas</b> as Lead Designer
@@ -209,8 +208,7 @@ function printSpecificHelp(helpNumber) {
 				$(this).scrollTop(0);
 			});
 			break;
-
-		case 11:
+		case 12:
 			string = (function () {/*
                 1) <b> Use the cards panel to compare and choose courses.</b> Add courses that interest you into the 
 					cards panel, then decide which semesters they go in from there. This will help you organize much more easily!<br>
