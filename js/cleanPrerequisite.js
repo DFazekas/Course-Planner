@@ -1,3 +1,6 @@
+/* Copyright (c) 2017 Devon Fazekas-Thomas */
+/* Cleans prerequisite string of typos and bugs, and formates it to be computed. */
+
 function clean_and_format (string) {
 /* FUNCTION LEGEND
  * 1. primaryStrCleaning():     cleans commonly occurring errors in string (returns string).
