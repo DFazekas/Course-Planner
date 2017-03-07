@@ -1,7 +1,6 @@
+/* Copyright (c) 2017 Nawar Ismail */
 /* Sums credits up to, but not including, selected term. */
 function countCredits(subject, level, orAbove, semesterCap) { // countCredits('', 0000, false, 100) gives all
-    // if (subject === '') return 0.0;
-    // console.log(subject);
     var creditTotal = 0.00; // Credit sum up to, but not including, selected semester.
     for (var i = 0; i < SEMESTERS.length && i <= semesterCap; i++) {
         var numCourses = SEMESTERS[i].courses.length;
@@ -9,7 +8,7 @@ function countCredits(subject, level, orAbove, semesterCap) { // countCredits(''
             if (subject == '') {
             	var courseCredit = SEMESTERS[i].courses[k].details['credits'];
             	if (courseCredit != undefined) {
-	                creditTotal += parseFloat(courseCredit.substring(1));// [1.23]
+	                creditTotal += parseFloat(courseCredit.substring(1)); // [1.23]
 	            }
                 continue;
             }
@@ -43,18 +42,7 @@ function countCredits(subject, level, orAbove, semesterCap) { // countCredits(''
             }
             if (wrong) continue;
 
-            creditTotal += parseFloat(SEMESTERS[i].courses[k].details['credits'].substring(1));// [1.23]
-
-
-            // if (findString())
-            // console.log()
-            // if (subject != '') {
-                // if (SEMESTERS[i].courses[k].details['subject'])
-                // console.log(SEMESTERS[i].courses[k].details['subject']);
-                // should be generalized to say trim []'s, for [1.0] if it exists
-                // console.log(SEMESTERS[i].courses[k].details['accr'] + " = " + SEMESTERS[i].courses[k].details['credits'] + "-> " + creditTotal);
-
-            // }
+            creditTotal += parseFloat(SEMESTERS[i].courses[k].details['credits'].substring(1)); // [1.23]
         }
     }
     return creditTotal;
@@ -191,9 +179,14 @@ function verifyCourse(details) {
 		}
 		return "";
 	}
-	function prereq() {
-		// This is from equates: "Pre-requisites may be taken as co-requisites"
 
+	function prereq() {
+		// This is from equates: "Pre-requisites may be taken as co-requisites", so must be factored in.
+		if (details.prereqs == "") {// No prereqs
+			return "";
+		}
+
+		return "";
 	}
 
 	function coreq() {
