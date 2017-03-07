@@ -3,6 +3,41 @@ $(document).on('click', '.fpFilter', function(){
 	return;
 });
 
+$(document).on('click', '#jumpToFilters', function() {
+	$('#secondPanelOptions').hide(0);
+	$('#firstPanelOptions').show(0);
+
+	
+	if ($('#middlePanelNav2').hasClass('active')) {
+		$('a[href$="firstPanel"]').click();
+		setTimeout(function() {
+			$('#firstPanelFilters').show(800);
+		}, 200);
+	} else {
+		$('#firstPanelFilters').show(800);
+	}
+	return;
+});
+
+// https://www.sanwebe.com/2014/01/how-to-select-all-deselect-checkboxes-jquery
+$(document).on('click', '#filtersAllCreds', function() { // select all
+	var status = this.checked; // "select all" checked status
+    $('.fpCredits').each(function(){ //iterate all listed checkbox items
+        this.checked = !status; //change ".checkbox" checked status
+    });
+    displayPlans();
+    return;
+});
+
+$(document).on('click', '#filtersNoCreds', function() { // Deselect all
+	var status = this.checked; // "select all" checked status
+    $('.fpCredits').each(function(){ //iterate all listed checkbox items
+        this.checked = status; //change ".checkbox" checked status
+    });
+    displayPlans();
+	return;
+});
+
 
 
 
