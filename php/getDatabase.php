@@ -1,7 +1,6 @@
 <?php
     $conn = connect(); 
-
-    $sql = "SELECT * FROM PlaintextCourses";
+    $sql = "SELECT * FROM `TABLE 1`";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -10,7 +9,7 @@
 
         // Get column names
         foreach($row as $key => $value) {
-             array_push($colunmNames, $key);
+            array_push($colunmNames, $key);
         }
 
         // Get table contents
@@ -21,21 +20,16 @@
             echo '%';
         } while ($row = $result->fetch_assoc());
     } else {
-        echo $sql." Results";
+        echo $sql." Results (Error)";
     }
 
     $conn->close();
 
     function connect() {
-        $servername = "mysql6.000webhost.com";
-        $username = "a4242065_name";
-        $password = "Pillowchair23";
-        $dbname = "a4242065_data";
-
-        // $servername = "mysql9.000webhost.com";
-        // $username = "a7958014_a";
-        // $password = "pass1word";
-        // $dbname = "a7958014_a";
+        $servername = "localhost";
+        $username = "planm779_access";
+        $password = "Pillowchair12";
+        $dbname = "planm779_GuelphCourses";
 
         $conn = new mysqli($servername, $username, $password, $dbname);
         
