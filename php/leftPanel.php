@@ -53,7 +53,7 @@
 
     <!-- Course section-->
     <!-- Slide ONE -->
-    <table style="width:100%;">
+    <table style="width:100%;" id="courseTitleViewingRegion">
         <tr style="width:30%;display:inline-block;">
             <td style="display:block;text-align:right;">
                 <label class="codeLabelName" value='false'>Name</label>
@@ -144,7 +144,7 @@
                     </div>
                 </td>
             </tr>
-            <tr>
+            <tr id="deleteSemesterRegion">
                 <td>
                     <table style="width:100%;">
                         <tr style="width:100%;">
