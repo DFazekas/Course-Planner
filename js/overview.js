@@ -1,3 +1,4 @@
+/* Click on overview radio */
 $(document).on('click', ".overview_sem", function() {
 	var sem = this.value;
 	for (var i = 0; i < SEMESTERS.length; i++) {
@@ -9,6 +10,9 @@ $(document).on('click', ".overview_sem", function() {
 	return;
 });
 
+
+
+
 $(document).on('click', ".overview_course", function() {
 	var temp = this.value.split(' ');
 	var sem = temp[0];
@@ -18,4 +22,21 @@ $(document).on('click', ".overview_course", function() {
 	// alert(sem);
 	// alert(course);
 	return;
+});
+
+
+
+ $(document).on('click', '#printModal', function() {
+    $("#overviewContent").printThis({ 
+        debug: false,              
+        importCSS: true,             
+        importStyle: true,         
+        printContainer: true,       
+        // loadCSS: "../css/style.css", 
+        pageTitle: "My Plan",             
+        removeInline: false,        
+        printDelay: 0,    // 33        
+        header: null,             
+        formValues: true          
+    }); 
 });
