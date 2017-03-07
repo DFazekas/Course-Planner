@@ -1,3 +1,4 @@
+/* Copyright (c) 2017 Nawar Ismail */
 $(document).on('click', '.openUploadTS', function() {
 	var string = (function () {/*
 		<div style="text-align:center;">
@@ -75,7 +76,8 @@ $(document).on('change', '#fileInput', function(evt) { // Taken from somewhere
   	return;
 });
 
-
+/* Modified from:
+http://www.htmlgoodies.com/beyond/javascript/read-text-files-using-the-javascript-filereader.html#fbid=uOPUtDtkwq9 */
 function readTranscriptFile(evt, deleteAll) {
 	/* Retrieve the first (and only!) File from the FileList object */
 	var f = evt.target.files[0]; 
@@ -96,7 +98,7 @@ function readTranscriptFile(evt, deleteAll) {
 		    /* Read File */
 			var r = new FileReader();
 			r.onload = function(e) {  // asynchronous!
-				var contents = e.target.result; // MUST SANATIZE SO AVOID INJECTION ATTACKS
+				var contents = e.target.result;
 				readTranscriptData(contents);
 			 	return;
 			}
